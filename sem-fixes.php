@@ -5,7 +5,7 @@ Plugin URI: http://www.getsemiologic.com
 Description: A variety of teaks and fixes for WordPress and third party plugins
 Author: Denis de Bernardy
 Version: 1.7
-Author URI: http://www.semiologic.com
+Author URI: http://www.getsemiologic.com
 Update Service: http://version.semiologic.com/wordpress
 Update Tag: sem_fixes
 */
