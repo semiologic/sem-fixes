@@ -6,7 +6,7 @@ Description: A variety of teaks and fixes for WordPress and third party plugins
 Author: Denis de Bernardy
 Version: 1.7
 Author URI: http://www.getsemiologic.com
-Update Service: http://version.semiologic.com/wordpress
+Update Service: http://version.semiologic.com/plugins
 Update Tag: sem_fixes
 */
 
