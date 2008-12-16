@@ -27,12 +27,11 @@ class sem_fixes_admin
 		# fix plugins
 		add_action('plugins_loaded', array('sem_fixes_admin', 'fix_plugins'), 1000000);
 		
-		# Dashboard
+		# Dashboard Link
 		add_action('load-index.php', array('sem_fixes_admin', 'dashboard_link'));
 		
-		#remove max width from admin screens
-		add_filter('tiny_mce_before_init', array('sem_fixes_admin', 'rmw_tinymce'));
-		add_action('admin_head', array('sem_fixes_admin', 'rmw_head'),99); //Hook late after all css has been done
+		# Lists in admin area
+		add_action('admin_head', array('sem_fixes_admin', 'fix_admin_li'));
 	} # init()
 	
 	
@@ -324,38 +323,24 @@ class sem_fixes_admin
 		$page = add_options_page( 'TinyMCE Advanced', 'TinyMCE Advanced', 'manage_options', 'tinymce-advanced', 'tadv_page' );
 		add_action( "admin_print_scripts-$page", 'tadv_add_scripts' );
 		add_action( "admin_head-$page", 'tadv_admin_head' );
-	} #tinymce_advanced_admin_menu()	
-
-	/*
-	Remove Max Width functionality, version: 1.3
-	http://dd32.id.au/wordpress-plugins/remove-max-width/
-	by Dion Hulse (http://dd32.id.au/)
-	*/	
-	function rmw_tinymce($init)
-	{
-		$init['theme_advanced_resize_horizontal'] = true;
-		return $init;
-	}
-
-	function rmw_head()
-	{
-		global $is_IE; ?>
-		<style type="text/css" media="all">
-			.wrap, 
-			.updated,
-			.error,
-			#the-comment-list td.comment {
-				max-width: none !important;
-			}
-		<?php if( $is_IE )
-		{ ?>
-			* html #wpbody { 
-		 		_width: 99.9% !important; 
-		 	}
-		<?php } ?>
-		</style>
-	<?php } 
+	} #tinymce_advanced_admin_menu()
 	
+	
+	#
+	# fix_admin_li()
+	#
+	
+	function fix_admin_li()
+	{
+		?>
+<style type="text/css">
+#contextual-help-wrap li {
+	margin-left: 1.5em;
+	list-style: square;
+}
+</style>
+<?php
+	} # fix_admin_li()
 } # sem_fixes_admin
 
 sem_fixes_admin::init();
