@@ -31,7 +31,7 @@ class sem_fixes_admin
 		add_action('load-index.php', array('sem_fixes_admin', 'dashboard_link'));
 		
 		# Lists in admin area
-		add_action('admin_head', array('sem_fixes_admin', 'fix_admin_li'));
+		add_action('admin_head', array('sem_fixes_admin', 'fix_admin_css'));
 	} # init()
 	
 	
@@ -327,13 +327,17 @@ class sem_fixes_admin
 	
 	
 	#
-	# fix_admin_li()
+	# fix_admin_css()
 	#
 	
-	function fix_admin_li()
+	function fix_admin_css()
 	{
 		?>
 <style type="text/css">
+.turbo-nag {
+	display: none !important;
+}
+
 #contextual-help-wrap li {
 	margin-left: 1.5em;
 	list-style: square;
