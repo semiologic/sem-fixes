@@ -16,7 +16,7 @@ class sem_fixes_admin
 		remove_filter( 'update_footer', 'core_update_footer' );
 		remove_action( 'admin_notices', 'update_nag', 3 );
 		add_filter( 'pre_option_update_core', array('sem_fixes_admin', 'kill_wp_version_check'));
-				
+		
 		# kill link updater
 		add_filter('option_use_linksupdate', create_function('$in', 'return 0;'));
 		
