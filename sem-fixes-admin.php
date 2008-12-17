@@ -19,6 +19,7 @@ class sem_fixes_admin
 		
 		# kill link updater
 		add_filter('option_use_linksupdate', create_function('$in', 'return 0;'));
+		add_action('load-options-misc.php', array('sem_fixes_admin', 'kill_link_updater'));
 		
 		# allow html in term descriptions
 		add_action('init', array('sem_fixes_admin', 'set_kses'));
@@ -63,6 +64,50 @@ class sem_fixes_admin
 		
 		return $o;
 	} # kill_wp_version_check()
+	
+	
+	#
+	# kill_link_updater()
+	#
+	
+	function kill_link_updater()
+	{
+		ob_start(array('sem_fixes_admin', 'kill_link_updater_ob'));
+	} # kill_link_updater()
+	
+	
+	#
+	# kill_link_updater_ob()
+	#
+	
+	function kill_link_updater_ob($buffer)
+	{
+		$buffer = preg_replace_callback(
+			"|<tr>.+?</tr>|is",
+			array('sem_fixes_admin', 'kill_link_updater_callback'),
+			$buffer);
+		
+		return $buffer;
+	} # kill_link_updater_ob()
+	
+	
+	#
+	# kill_link_updater_callback()
+	#
+	
+	function kill_link_updater_callback($match)
+	{
+		$match = $match[0];
+		
+		if ( strpos($match, 'use_linksupdate') !== false )
+		{
+			return '';
+		}
+		else
+		{
+			return $match;
+		}
+	} # kill_link_updater_callback()
 	
 	
 	#
