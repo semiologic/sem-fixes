@@ -86,20 +86,27 @@ class sem_fixes_admin
 	function sort_admin_menu()
 	{
 		global $submenu;
-
+		
+		dump($submenu);
+		
 		foreach ( $submenu as $key => $menu_items )
 		{
 			switch ( $key )
 			{
-			case 'post-new.php':
 			case 'edit.php':
-				$stop = 0;
-				$caps = array('edit_posts', 'edit_pages');
+			case 'upload.php';
+			case 'link-manager.php';
+			case 'edit-pages.php';
+				$stop = 2;
+				$caps = array();
 				break;
 
 			case 'themes.php':
 			case 'plugins.php':
-				unset($menu_items[10]); # theme and plugin editors
+				$stop = 2;
+				$caps = array();
+				unset($menu_items[15]); # theme and plugin editors
+				break;
 
 			default:
 				$stop = 1;
