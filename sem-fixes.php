@@ -32,6 +32,7 @@ $sem_fixes_files = array(
 	);
 $sem_fixes_admin_files = array(
 	'mypageorder/mypageorder.php',
+	'order-categories/category-order.php',
 	);
 
 class sem_fixes
