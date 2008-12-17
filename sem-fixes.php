@@ -66,10 +66,6 @@ class sem_fixes
 		
 		# security fix
 		add_filter('option_default_role', array('sem_fixes', 'default_role'));
-	
-		# shortcodes
-		add_filter('get_the_excerpt', array('sem_fixes', 'strip_shortcodes'), 0);
-		add_filter('get_the_excerpt', array('sem_fixes', 'restore_shortcodes'), 20);
 		
 		# generator
 		add_filter('the_generator', array('sem_fixes', 'the_generator'));
@@ -154,30 +150,6 @@ EOF;
 	{
 		return '';
 	} # the_generator()
-	
-	
-	#
-	# strip_shortcodes()
-	#
-	
-	function strip_shortcodes($in = null)
-	{
-		remove_filter('the_content', 'do_shortcode', 11);
-		
-		return $in;
-	} # strip_shortcodes()
-	
-	
-	#
-	# restore_shortcodes()
-	#
-	
-	function restore_shortcodes($in = null)
-	{
-		add_filter('the_content', 'do_shortcode', 11);
-		
-		return $in;
-	} # restore_shortcodes()
 	
 
 	#
