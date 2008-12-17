@@ -354,13 +354,6 @@ EOF;
 			add_action('after_the_wrapper', 'wp_easy_auctionads_end');
 		}
 		
-		# now reading
-		if ( function_exists('nr_add_pages') )
-		{
-			add_filter('option_nowReadingOptions', array('sem_fixes', 'nr_options'));
-			remove_action('wp_head', 'nr_header_stats');
-		}
-		
 		# hashcash
 		if ( function_exists('wphc_add_commentform') )
 		{
@@ -371,35 +364,6 @@ EOF;
 			add_action('comment_form', array('sem_fixes', 'wphc_addform'));
 		}
 	} # fix_plugins()
-	
-	
-	#
-	# function nr_options()
-	#
-	
-	function nr_options($o)
-	{
-		$useModRewrite = $o['useModRewrite'];
-		
-		$o['menuLayout'] = NR_MENU_MULTIPLE;
-		$o['useModRewrite'] = intval(get_option('permalink_structure') != '');
-		$o['debugMode'] = 0;
-		$o['httpLib'] = function_exists('curl_init') ? 'curl' : 'snoopy';
-		$o['formatDate'] = get_option('date_format');
-		$o['permalinkBase'] = 'library/';
-		$o['booksPerPage'] = $o['booksPerPage'] ? $o['booksPerPage'] : 10;
-		
-		if ( $useModRewrite != $o['useModRewrite'] )
-		{
-			remove_filter('option_nowReadingOptions', array('sem_fixes', 'nr_options'));
-			update_option('nowReadingOptions', $o);
-
-			$GLOBALS['wp_rewrite'] =& new WP_Rewrite();
-			$GLOBALS['wp_rewrite']->flush_rules();
-		}
-		
-		return $o;
-	} # nr_options()
 	
 	
 	#
@@ -426,6 +390,7 @@ EOF;
 		echo '<input type="hidden" id="wphc_value" name="wphc_value" value=""/>';
 		echo '<noscript><small>Wordpress Hashcash needs javascript to work, but your browser has javascript disabled. Your comment will be '.$verb.'!</small></noscript>';
 	} # wphc_addform()
+	
 
 	#
 	# kill_hack_files()

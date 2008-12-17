@@ -162,18 +162,6 @@ class sem_fixes_admin
 			sem_fixes_admin::fix_db_backup();
 		}
 		
-		# now reading
-		if ( function_exists('nr_add_pages') )
-		{
-			add_action('load-settings_page_nr_options', array('sem_fixes_admin', 'nr_page_options'));
-			
-			remove_action('admin_menu', 'nr_add_pages');
-			add_action('admin_menu', array('sem_fixes_admin', 'nr_admin_menu'));
-			
-			remove_action('admin_head', 'nr_add_head');
-			add_action('admin_head', array('sem_fixes_admin', 'nr_admin_head'));
-		}
-		
 		# tinymce advanced
 		if ( function_exists('tadv_menu') ) 
 		{
@@ -234,85 +222,6 @@ class sem_fixes_admin
 		add_management_page(__('Backup','wp-db-backup'), __('Backup','wp-db-backup'), 'administrator', $mywpdbbackup->basename, array(&$mywpdbbackup, 'backup_menu'));
 	} # db_backup_admin_menu()
 	
-	
-	#
-	# nr_page_options()
-	#
-	
-	function nr_page_options()
-	{
-		ob_start(array('sem_fixes_admin', 'nr_page_options_ob'));
-	} # nr_page_options()
-	
-	
-	#
-	# nr_page_options_ob()
-	#
-	
-	function nr_page_options_ob($buffer)
-	{
-		return preg_replace_callback("/
-			<tr(?:\s[^>]*)?>
-			\s*
-			<th(?:\s[^>]*)?>(.*)<\/th>
-			.*
-			<\/tr>
-			/isUx", array('sem_fixes_admin', 'nr_page_options_callback'), $buffer);
-	} # nr_page_options_ob()
-	
-	
-	#
-	# nr_page_options_callback()
-	#
-	
-	function nr_page_options_callback($in)
-	{
-		if ( in_array($in[1],
-			array(
-				__('Date format string', NRTD) . ':',
-				__('Admin menu layout', NRTD) . ':',
-				__("HTTP Library", NRTD) . ':',
-				__("Use <code>mod_rewrite</code> enhanced library?", NRTD),
-				__("Debug mode", NRTD) . ':',
-				__("Multiuser mode", NRTD) . ':',
-				)
-			) )
-		{
-			return '';
-		}
-		
-		return $in[0];
-	} # nr_page_options_callback()
-	
-	
-	#
-	# nr_admin_menu()
-	#
-	
-	function nr_admin_menu()
-	{
-		add_submenu_page('post-new.php', 'Book Review', 'Book Review', 'edit_pages', 'add_book', 'now_reading_add');
-		add_management_page('Book Reviews', 'Book Reviews', 'edit_pages', 'manage_books', 'nr_manage');
-		add_options_page('Book Reviews', 'Book Reviews', 'manage_options', 'nr_options', 'nr_options');
-	} # nr_admin_menu()
-	
-	
-	#
-	# nr_admin_head()
-	#
-
-	function nr_admin_head()
-	{
-		echo '
-		<link rel="stylesheet" href="' . get_bloginfo('url') . '/wp-content/plugins/now-reading/admin/admin.css" type="text/css" />
-		<script type="text/javascript">
-			var lHide = "' . __("Hide", NRTD) . '";
-			var lEdit = "' . __("Edit", NRTD) . '";
-		</script>
-		<script type="text/javascript" src="' . get_bloginfo('url') . '/wp-content/plugins/now-reading/js/manage.js"></script>
-		';
-	} # nr_admin_head()
-
 	
 	#
 	# tinymce_advanced_admin_menu()
