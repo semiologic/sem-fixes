@@ -25,6 +25,7 @@ global $sem_fixes_files;
 global $sem_fixes_admin_files;
 
 $sem_fixes_files = array(
+	'favicon-head.php',
 	'impostercide.php',
 	'not-to-me.php',
 	'smart-update-pinger.php',
