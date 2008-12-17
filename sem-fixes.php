@@ -365,20 +365,46 @@ EOF;
 		# hashcash
 		if ( function_exists('wphc_add_commentform') )
 		{
+			add_filter('option_plugin_wp-hashcash', array('sem_fixes', 'hc_options'));
 			remove_action('admin_menu', 'wphc_add_options_to_admin');
-			remove_action('comment_form', 'wphc_add_commentform');
 			remove_action('widgets_init', 'wphc_widget_init');
-			
-			add_action('comment_form', array('sem_fixes', 'wphc_addform'));
+			remove_action('comment_form', 'wphc_add_commentform');
+			add_action('comment_form', array('sem_fixes', 'hc_add_message'));
+			add_action('wp_footer', array('sem_fixes', 'hc_add_elt'));
 		}
 	} # fix_plugins()
 	
 	
 	#
-	# wphc_addform()
+	# wphc_options()
 	#
 	
-	function wphc_addform()
+	function hc_options($o)
+	{
+		if ( function_exists('akismet_init') && get_option('wordpress_api_key') )
+		{
+			$o['moderation'] = 'akismet';
+		}
+		else
+		{
+			$o['moderation'] = 'delete';
+		}
+		
+		$o['validate-ip'] = 'on';
+		$o['validate-url'] = 'on';
+		$o['logging'] = '';
+		
+		#dump($o);
+		
+		return $o;
+	} # hc_options()
+	
+	
+	#
+	# hc_add_message()
+	#
+	
+	function hc_add_message()
 	{
 		$options = wphc_option();
 
@@ -397,7 +423,30 @@ EOF;
 
 		echo '<input type="hidden" id="wphc_value" name="wphc_value" value=""/>';
 		echo '<noscript><small>Wordpress Hashcash needs javascript to work, but your browser has javascript disabled. Your comment will be '.$verb.'!</small></noscript>';
-	} # wphc_addform()
+	} # hc_add_message()
+	
+	
+	#
+	# hc_add_elt()
+	#
+	
+	function hc_add_elt()
+	{
+		# prevent js errors on pages with no comment form
+		if ( is_singular() )
+		{
+			echo <<<EOF
+
+<script type="text/javascript">
+if ( !document.getElementById('wphc_value') )
+{
+	document.write('<input type="hidden" id="wphc_value" name="wphc_value" value="" />');
+}
+</script>
+
+EOF;
+		}
+	} # hc_add_elt()
 	
 
 	#
