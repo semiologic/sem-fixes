@@ -163,12 +163,6 @@ class sem_fixes_admin
 	
 	function fix_plugins()
 	{
-		# wp backup: major security flaws
-		if ( isset($GLOBALS['mywpdbbackup']) )
-		{
-			sem_fixes_admin::fix_db_backup();
-		}
-		
 		# tinymce advanced
 		if ( function_exists('tadv_menu') ) 
 		{
@@ -185,29 +179,24 @@ class sem_fixes_admin
 	
 	function fix_db_backup()
 	{
-		global $mywpdbbackup;
 		
 		if ( isset($_POST['do_backup']) )
 		{
 			if ( $_POST['do_backup'] == 'backup' )
 			{
-				remove_action('admin_menu', array(&$mywpdbbackup, 'fragment_menu'));
-				add_action('admin_menu', array('sem_fixes_admin', 'db_backup_fragment_menu'));
-			}
-			elseif ( !current_user_can('administrator') )
-			{
-				remove_action('init', array(&$mywpdbbackup, 'perform_backup'));
+		#		remove_action('admin_menu', array(&$mywpdbbackup, 'fragment_menu'));
+		#		add_action('admin_menu', array('sem_fixes_admin', 'db_backup_fragment_menu'));
 			}
 		}
 		elseif ( !isset($_GET['fragment']) && !isset($_GET['backup']) )
 		{
-			remove_action('admin_menu', array(&$mywpdbbackup, 'admin_menu'));
-			add_action('admin_menu', array('sem_fixes_admin', 'db_backup_admin_menu'));
+		#	remove_action('admin_menu', array(&$mywpdbbackup, 'admin_menu'));
+		#	add_action('admin_menu', array('sem_fixes_admin', 'db_backup_admin_menu'));
 		}
 		
 	} # fix_db_backup()
 
-	
+
 	#
 	# db_backup_fragment_menu()
 	#
@@ -215,7 +204,12 @@ class sem_fixes_admin
 	function db_backup_fragment_menu()
 	{
 		global $mywpdbbackup;
-		add_management_page(__('Backup','wp-db-backup'), __('Backup','wp-db-backup'), 'administrator', $mywpdbbackup->basename, array(&$mywpdbbackup, 'build_backup_script'));
+		$_page_hook = add_management_page(__('Backup','wp-db-backup'), __('Backup','wp-db-backup'), 'administrator', $mywpdbbackup->basename, array(&$mywpdbbackup, 'build_backup_script'));
+		add_action('load-' . $_page_hook, array(&$mywpdbbackup, 'admin_load'));
+		if ( function_exists('add_contextual_help') ) {
+			$text = $mywpdbbackup->help_menu();
+			add_contextual_help($_page_hook, $text);
+		}
 	} # db_backup_fragment_menu()
 	
 	
@@ -226,7 +220,8 @@ class sem_fixes_admin
 	function db_backup_admin_menu()
 	{
 		global $mywpdbbackup;
-		add_management_page(__('Backup','wp-db-backup'), __('Backup','wp-db-backup'), 'administrator', $mywpdbbackup->basename, array(&$mywpdbbackup, 'backup_menu'));
+		$page_hook = add_management_page(__('Backup','wp-db-backup'), __('Backup','wp-db-backup'), 'administrator', $mywpdbbackup->basename, array(&$mywpdbbackup, 'backup_menu'));
+		add_action('load-' . $page_hook, array(&$mywpdbbackup, 'admin_load'));
 	} # db_backup_admin_menu()
 	
 	

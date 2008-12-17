@@ -347,6 +347,14 @@ EOF;
 	
 	function fix_plugins()
 	{
+		# wp db backup: major security issue
+		global $mywpdbbackup;
+		
+		if ( isset($mywpdbbackup) && !current_user_can('administrator') )
+		{
+			remove_action('init', array(&$mywpdbbackup, 'perform_backup'));
+		}
+		
 		# easy auction ads
 		if ( function_exists('wp_easy_auctionads_start') )
 		{
