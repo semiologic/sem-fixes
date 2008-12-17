@@ -67,9 +67,6 @@ class sem_fixes
 		# security fix
 		add_filter('option_default_role', array('sem_fixes', 'default_role'));
 	
-		# disable post revisions
-		add_action('init', array('sem_fixes', 'disable_post_revisions'));
-		
 		# shortcodes
 		add_filter('get_the_excerpt', array('sem_fixes', 'strip_shortcodes'), 0);
 		add_filter('get_the_excerpt', array('sem_fixes', 'restore_shortcodes'), 20);
@@ -181,16 +178,6 @@ EOF;
 		
 		return $in;
 	} # restore_shortcodes()
-	
-	#
-	# disable_post_revisions()
-	#
-	
-	function disable_post_revisions()
-	{
-		remove_action ( 'pre_post_update', 'wp_save_post_revision' );
-		define('WP_POST_REVISIONS', false);
-	} # disable_post_revisions()	
 	
 
 	#
