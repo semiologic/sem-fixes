@@ -84,7 +84,11 @@ class sem_fixes
 		add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 		
 		# extra scripts
-		add_action('wp_print_scripts', array('sem_fixes', 'add_scripts'));
+		if ( !is_admin() )
+		{
+			add_action('wp_print_scripts', array('sem_fixes', 'add_scripts'));
+			add_action('wp_print_styles', array('sem_fixes', 'add_css'));
+		}
 	} # init()
 	
 	
@@ -96,6 +100,16 @@ class sem_fixes
 	{
 		wp_enqueue_script('thickbox');
 	} # add_scripts()
+	
+	
+	#
+	# add_css()
+	#
+	
+	function add_css()
+	{
+		wp_enqueue_style('thickbox');
+	} # add_css()
 	
 	
 	#
