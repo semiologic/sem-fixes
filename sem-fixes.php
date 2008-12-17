@@ -88,6 +88,8 @@ class sem_fixes
 		{
 			add_action('wp_print_scripts', array('sem_fixes', 'add_scripts'));
 			add_action('wp_print_styles', array('sem_fixes', 'add_css'));
+			
+			add_action('wp_head', array('sem_fixes', 'add_thickbox_images'), 20);
 		}
 	} # init()
 	
@@ -110,6 +112,27 @@ class sem_fixes
 	{
 		wp_enqueue_style('thickbox');
 	} # add_css()
+	
+	
+	#
+	# add_thickbox_images()
+	#
+	
+	function add_thickbox_images()
+	{
+		$site_url = rtrim(get_option('siteurl'), '/');
+		
+		$js = <<<EOF
+
+<script type="text/javascript">
+var tb_pathToImage = "$site_url/wp-includes/js/thickbox/loadingAnimation.gif";
+var tb_closeImage = "$site_url/wp-includes/js/thickbox/tb-close.png";
+</script>
+
+EOF;
+		
+		echo $js;
+	} # add_thickbox_images()
 	
 	
 	#
