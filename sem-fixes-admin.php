@@ -87,7 +87,7 @@ class sem_fixes_admin
 	{
 		global $submenu;
 		
-		dump($submenu);
+		#dump($submenu);
 		
 		foreach ( $submenu as $key => $menu_items )
 		{
