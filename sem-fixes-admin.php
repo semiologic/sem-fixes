@@ -147,6 +147,11 @@ class sem_fixes_admin
 				break;
 
 			case 'themes.php':
+				$stop = 2;
+				$caps = array();
+				unset($menu_items[10]); # theme and plugin editors
+				break;
+
 			case 'plugins.php':
 				$stop = 2;
 				$caps = array();
