@@ -81,7 +81,7 @@ class sem_fixes
 		add_filter('option_active_plugins', array('sem_fixes', 'kill_hack_files'));
 		
 		# tinyMCE
-		#add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
+		add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 	} # init()
 	
 	
