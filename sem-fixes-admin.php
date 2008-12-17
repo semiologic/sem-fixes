@@ -229,14 +229,14 @@ class sem_fixes_admin
 		{
 			if ( $_POST['do_backup'] == 'backup' )
 			{
-		#		remove_action('admin_menu', array(&$mywpdbbackup, 'fragment_menu'));
-		#		add_action('admin_menu', array('sem_fixes_admin', 'db_backup_fragment_menu'));
+				remove_action('admin_menu', array(&$mywpdbbackup, 'fragment_menu'));
+				add_action('admin_menu', array('sem_fixes_admin', 'db_backup_fragment_menu'));
 			}
 		}
 		elseif ( !isset($_GET['fragment']) && !isset($_GET['backup']) )
 		{
-		#	remove_action('admin_menu', array(&$mywpdbbackup, 'admin_menu'));
-		#	add_action('admin_menu', array('sem_fixes_admin', 'db_backup_admin_menu'));
+			remove_action('admin_menu', array(&$mywpdbbackup, 'admin_menu'));
+			add_action('admin_menu', array('sem_fixes_admin', 'db_backup_admin_menu'));
 		}
 		
 	} # fix_db_backup()
