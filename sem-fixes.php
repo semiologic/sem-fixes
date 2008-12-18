@@ -140,6 +140,45 @@ EOF;
 		
 		$o['compress'] = false;
 		
+		# http://forum.semiologic.com/discussion/4807/iframe-code-disappears-switching-visualhtml/
+		# http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/valid_elements#Full_XHTML_rule_set
+		# assume the stuff below is properly set if they exist already
+		
+		if ( current_user_can('unfiltered_html') )
+		{
+			if ( !isset($o['extended_valid_elements']) )
+			{
+				$elts = array();
+				
+				$elts[] = "iframe[align<bottom?left?middle?right?top|class|frameborder|height|id"
+					. "|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style"
+					. "|title|width]";
+
+				$elts = implode(',', $elts);
+
+				$o['extended_valid_elements'] = $elts;
+			}
+		}
+		else
+		{
+			if ( !isset($o['invalid_elements']) )
+			{
+				$elts = array();
+
+				$elts[] = "iframe";
+				$elts[] = "script";
+				$elts[] = "form";
+				$elts[] = "input";
+				$elts[] = "button";
+				$elts[] = "textarea";
+
+				$elts = implode(',', $elts);
+
+				$o['invalid_elements'] = $elts;
+			}
+		}
+		#dump($o);die;
+		
 		return $o;
 	} # tiny_mce_config()
 	
