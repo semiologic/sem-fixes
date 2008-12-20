@@ -11,12 +11,6 @@ class sem_fixes_admin
 		# sort admin menu
 		add_action('admin_menu', array('sem_fixes_admin', 'sort_admin_menu'), 1000000);
 		
-		# kill wp notifications (slows down the admin area)
-		remove_action( 'init', 'wp_version_check' );
-		remove_filter( 'update_footer', 'core_update_footer' );
-		remove_action( 'admin_notices', 'update_nag', 3 );
-		add_filter( 'pre_option_update_core', array('sem_fixes_admin', 'kill_wp_version_check'));
-		
 		# kill link updater
 		add_filter('option_use_linksupdate', create_function('$in', 'return 0;'));
 		add_action('load-options-misc.php', array('sem_fixes_admin', 'kill_link_updater'));
@@ -48,22 +42,6 @@ class sem_fixes_admin
 			die;
 		}
 	} # dashboard_link()
-	
-	
-	#
-	# kill_wp_version_check()
-	#
-	
-	function kill_wp_version_check($o)
-	{
-		global $wp_version;
-		
-		$o = (object) null;
-		$o->last_checked = time();
-		$o->version_checked = $wp_version;
-		
-		return $o;
-	} # kill_wp_version_check()
 	
 	
 	#
