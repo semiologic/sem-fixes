@@ -277,8 +277,9 @@ class sem_fixes_admin
 	display: none !important;
 }
 
-#contextual-help-wrap li {
-	margin-left: 1.5em;
+#contextual-help-wrap li,
+.inside li {
+	margin-left: 1.8em;
 	list-style: square;
 }
 </style>
