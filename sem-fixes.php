@@ -28,7 +28,6 @@ $sem_fixes_files = array(
 	'favicon-head.php',
 	'impostercide.php',
 	'not-to-me.php',
-	'smart-update-pinger.php',
 	);
 $sem_fixes_admin_files = array(
 	'mypageorder/mypageorder.php',
