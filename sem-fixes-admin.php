@@ -27,7 +27,45 @@ class sem_fixes_admin
 		
 		# Lists in admin area
 		add_action('admin_head', array('sem_fixes_admin', 'fix_admin_css'));
+		
+		# sticky sidebar
+		add_action('load-widgets.php', array('sem_fixes_admin', 'sticky_sidebar'));
 	} # init()
+	
+	
+	#
+	# sticky_sidebar()
+	#
+	
+	function sticky_sidebar()
+	{
+		global $wp_registered_sidebars;
+		
+		if ( isset($_GET['sidebar']) )
+		{
+			$sidebar = $_GET['sidebar'];
+			
+			if ( isset($wp_registered_sidebars[$sidebar]) )
+			{
+				setcookie(
+					'sidebar_' . COOKIEHASH,
+					$sidebar,
+					time() + 14 * 86400,
+					COOKIEPATH,
+					COOKIE_DOMAIN
+					);
+			}
+		}
+		elseif ( isset($_COOKIE['sidebar_' . COOKIEHASH]) )
+		{
+			$sidebar = $_COOKIE['sidebar_' . COOKIEHASH];
+			
+			if ( isset($wp_registered_sidebars[$sidebar]) )
+			{
+				$_GET['sidebar'] = $sidebar;
+			}
+		}
+	} # sticky_sidebar()
 	
 	
 	#
