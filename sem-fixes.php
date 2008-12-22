@@ -350,6 +350,9 @@ class sem_fixes
 		{
 			add_action('before_the_wrapper', 'wp_easy_auctionads_start');
 			add_action('after_the_wrapper', 'wp_easy_auctionads_end');
+			
+			add_action('before_the_canvas', 'wp_easy_auctionads_start');
+			add_action('after_the_canvas', 'wp_easy_auctionads_end');
 		}
 		
 		# hashcash
