@@ -76,7 +76,20 @@ class sem_fixes
 		
 		# tinyMCE
 		add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
+		
+		# convert dots to dashes in sanitize_title
+		add_filter('sanitize_title', array('sem_fixes', 'sanitize_title'), 0);
 	} # init()
+	
+	
+	#
+	# sanitize_title()
+	#
+	
+	function sanitize_title($title)
+	{
+		return str_replace('.', '-', $title);
+	} # sanitize_title()
 	
 	
 	#
