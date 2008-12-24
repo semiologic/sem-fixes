@@ -79,6 +79,11 @@ class sem_fixes
 		
 		# convert dots to dashes in sanitize_title
 		add_filter('sanitize_title', array('sem_fixes', 'sanitize_title'), 0);
+		
+		# move wp version check
+		remove_action( 'init', 'wp_version_check' );
+		add_action( 'wp_footer', 'wp_version_check', 10000 );
+		add_action( 'admin_footer', 'wp_version_check', 10000 );
 	} # init()
 	
 	
