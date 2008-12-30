@@ -30,9 +30,6 @@ class sem_fixes_admin
 		
 		# sticky sidebar
 		add_action('load-widgets.php', array('sem_fixes_admin', 'sticky_sidebar'));
-		
-		if ( @ini_get('pcre.backtrack_limit') < 250000 )
-			@ini_set('pcre.backtrack_limit', 250000);
 	} # init()
 	
 	
