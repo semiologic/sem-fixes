@@ -84,28 +84,7 @@ class sem_fixes
 		remove_action( 'init', 'wp_version_check' );
 		add_action( 'wp_footer', 'wp_version_check', 10000 );
 		add_action( 'admin_footer', 'wp_version_check', 10000 );
-		
-		# erroneous slash
-		#add_filter('post_link', array('sem_fixes', 'unslashit'), 1000);
 	} # init()
-	
-	
-	#
-	# unslashit()
-	#
-	
-	function unslashit($url)
-	{
-		$replace = get_option('home');
-		
-		$find = rtrim($replace, '/');
-		$replace = $find . '/';
-		$find = $find . '//';
-		
-		$url = str_replace($find, $replace, $url);
-		
-		return $url;
-	} # unslashit()
 	
 	
 	#
