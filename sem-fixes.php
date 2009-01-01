@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Semiologic Fixes
-Plugin URI: http://www.getsemiologic.com
+Plugin URI: http://www.semiologic.com/software/wp-tweaks/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins
 Author: Denis de Bernardy
 Version: 1.8 RC
