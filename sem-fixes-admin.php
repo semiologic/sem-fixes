@@ -322,6 +322,10 @@ class sem_fixes_admin
 	margin-left: 1.8em;
 	list-style: square;
 }
+
+input#post_name {
+	width: 99%;
+}
 </style>
 <?php
 	} # fix_admin_li()
