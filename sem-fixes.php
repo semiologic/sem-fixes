@@ -87,6 +87,11 @@ class sem_fixes
 		
 		# strip double slashes from permalink
 		add_filter('the_permalink', array('sem_fixes', 'fix_permalink'), 1000);
+		
+		# give Magpie a litte bit more time
+		if ( !defined('MAGPIE_FETCH_TIME_OUT') ) {
+			define('MAGPIE_FETCH_TIME_OUT', 4);	// 4 second timeout, instead of 2
+		}
 	} # init()
 	
 	
