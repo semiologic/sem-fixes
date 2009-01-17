@@ -4,7 +4,7 @@ Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/wp-tweaks/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins
 Author: Denis de Bernardy
-Version: 1.8
+Version: 1.8.1 alpha
 Author URI: http://www.getsemiologic.com
 Update Service: http://version.semiologic.com/plugins
 Update Tag: sem_fixes
@@ -84,7 +84,27 @@ class sem_fixes
 		remove_action( 'init', 'wp_version_check' );
 		add_action( 'wp_footer', 'wp_version_check', 10000 );
 		add_action( 'admin_footer', 'wp_version_check', 10000 );
+		
+		# strip double slashes from permalink
+		add_filter('the_permalink', array('sem_fixes', 'fix_permalink'), 1000);
 	} # init()
+	
+	
+	#
+	# fix_permalink()
+	#
+	
+	function fix_permalink($link)
+	{
+		if ( strpos(substr($link, 8), '//') === false ) return $link;
+		
+		$good = get_option('home') . '/';
+		$bad = $good . '/';
+		
+		$link = str_replace($bad, $good, $link);
+		
+		return $link;
+	} # fix_permalink()
 	
 	
 	#
