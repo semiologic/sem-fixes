@@ -236,6 +236,8 @@ class sem_fixes_admin
 			add_action('admin_menu', array('sem_fixes_admin', 'tinymce_advanced_admin_menu'));
 		}
 		
+		# hashcash: disable in admin area, so as to enable ajax replies
+		remove_filter('preprocess_comment', 'wphc_check_hidden_tag');
 	} # fix_plugins()
 	
 	
