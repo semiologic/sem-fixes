@@ -30,6 +30,13 @@ class sem_fixes_admin
 		
 		# sticky sidebar
 		add_action('load-widgets.php', array('sem_fixes_admin', 'sticky_sidebar'));
+		
+		# tinymce
+		add_filter('tiny_mce_before_init', array('sem_fixes_admin', 'editor_options'), -1000);
+		add_filter('mce_external_plugins', array('sem_fixes_admin', 'editor_plugin'), 1000);
+		add_filter('mce_buttons', array('sem_fixes_admin', 'editor_buttons'), -1000);
+		add_filter('mce_buttons_2', array('sem_fixes_admin', 'editor_buttons_2'), -1000);
+		add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000);
 	} # init()
 	
 	
@@ -316,6 +323,87 @@ class sem_fixes_admin
 		
 		wp_enqueue_style('sem_fixes', $css, null, '20091018');
 	} # admin_css()
+	
+	
+	#
+	# editor_options()
+	#
+	
+	function editor_options($init)
+	{
+		$init['wordpress_adv_hidden'] = false;
+		
+		return $init;
+	} # editor_options()
+	
+	
+	#
+	# editor_plugin()
+	#
+	
+	function editor_plugin($plugin_array)
+	{
+		if ( get_user_option('rich_editing') == 'true')
+		{
+			$folder = plugins_url() . '/' . basename(dirname(__FILE__));
+			
+			foreach ( array('searchreplace', 'table') as $plugin )
+			{
+				$file = $folder . '/tinymce/' . $plugin . '/editor_plugin.js';
+				$plugin_array[$plugin] = $file;
+			}
+		}
+
+		return $plugin_array;
+	} # editor_plugin()
+
+
+	#
+	# editor_buttons()
+	#
+	
+	function editor_buttons($buttons)
+	{
+		return array(
+			'bold', 'italic', 'underline', 'strikethrough', '|',
+			'bullist', 'numlist', 'blockquote', '|',
+			'outdent', 'indent', '|',
+			'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
+			'link', 'unlink', '|',
+			'wp_more', 'wp_page', '|',
+			'fullscreen',
+			);
+	} # editor_buttons()
+
+
+	#
+	# editor_buttons_2()
+	#
+	
+	function editor_buttons_2($buttons)
+	{
+		return array(
+			'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', '|',
+			'pastetext', 'pasteword', 'removeformat', '|',
+			'media', 'charmap', '|',
+			'spellchecker',
+			);
+	} # editor_buttons_2()
+
+
+	#
+	# editor_buttons_3()
+	#
+	
+	function editor_buttons_3($buttons)
+	{
+		return array(
+			'tablecontrols', '|',
+			'undo', 'redo', '|',
+			'search', 'replace', '|',
+			'wp_help',
+			);
+	} # editor_buttons_3()
 } # sem_fixes_admin
 
 sem_fixes_admin::init();
