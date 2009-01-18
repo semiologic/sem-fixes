@@ -26,7 +26,7 @@ class sem_fixes_admin
 		add_action('load-index.php', array('sem_fixes_admin', 'dashboard_link'));
 		
 		# Lists in admin area
-		add_action('admin_head', array('sem_fixes_admin', 'fix_admin_css'));
+		add_action('admin_print_styles', array('sem_fixes_admin', 'admin_css'));
 		
 		# sticky sidebar
 		add_action('load-widgets.php', array('sem_fixes_admin', 'sticky_sidebar'));
@@ -306,29 +306,16 @@ class sem_fixes_admin
 	
 	
 	#
-	# fix_admin_css()
+	# admin_css()
 	#
 	
-	function fix_admin_css()
+	function admin_css()
 	{
-		?>
-<style type="text/css">
-.turbo-nag {
-	display: none !important;
-}
-
-#contextual-help-wrap li,
-.inside li {
-	margin-left: 1.8em;
-	list-style: square;
-}
-
-input#post_name {
-	width: 99%;
-}
-</style>
-<?php
-	} # fix_admin_li()
+		$folder = plugins_url() . '/' . basename(dirname(__FILE__));
+		$css = $folder . '/js/admin.css';
+		
+		wp_enqueue_style('sem_fixes', $css, null, '20091018');
+	} # admin_css()
 } # sem_fixes_admin
 
 sem_fixes_admin::init();

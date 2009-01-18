@@ -1,0 +1,13 @@
+.turbo-nag {
+	display: none !important;
+}
+
+#contextual-help-wrap li,
+.inside li {
+	margin-left: 1.8em;
+	list-style: square;
+}
+
+input#post_name {
+	width: 99%;
+}
