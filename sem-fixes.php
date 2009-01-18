@@ -44,12 +44,12 @@ class sem_fixes
 	{
 		# auto-maintain db
 		add_action('maintain_db', array('sem_fixes', 'maintain_db'));
-
+		add_action('init', array('sem_fixes', 'maintain_db'));
 		if ( !is_admin() )
 		{
 			if ( !wp_next_scheduled('maintain_db') )
 			{
-				wp_schedule_event(time(), 'hourly', 'maintain_db');
+				wp_schedule_event(time(), 'daily', 'maintain_db');
 			}
 
 			# remove #more-id in more links
@@ -258,12 +258,14 @@ class sem_fixes
 	{
 		global $wpdb;
 
-		$tablelist = $wpdb->get_results("SHOW TABLES", ARRAY_N);
-
-		foreach ($tablelist as $table)
+		$tablelist = $wpdb->get_results("SHOW TABLE STATUS LIKE '$wpdb->prefix%'", ARRAY_N);
+		
+		foreach ( $tablelist as $table )
 		{
 			$tablename = $table[0];
-
+			
+			if ( strtoupper($table[1]) != 'MYISAM' ) continue;
+			
 			$check = $wpdb->get_row("CHECK TABLE $tablename", ARRAY_N);
 
 			if ( $check[2] == 'error' )
