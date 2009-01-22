@@ -3,8 +3,8 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/wp-tweaks/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins
-Author: Denis de Bernardy
 Version: 1.8.1 alpha
+Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Update Service: https://members.semiologic.com/media/plugins/sem-fixes.zip
 */
