@@ -37,6 +37,7 @@ class sem_fixes_admin
 		add_filter('mce_buttons', array('sem_fixes_admin', 'editor_buttons'), -1000);
 		add_filter('mce_buttons_2', array('sem_fixes_admin', 'editor_buttons_2'), -1000);
 		add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000);
+		add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000);
 	} # init()
 	
 	
@@ -328,7 +329,7 @@ class sem_fixes_admin
 		{
 			$folder = plugins_url() . '/' . basename(dirname(__FILE__));
 			
-			foreach ( array('advlink', 'searchreplace', 'table') as $plugin )
+			foreach ( array('advlink', 'emotions', 'searchreplace', 'table') as $plugin )
 			{
 				$file = $folder . '/tinymce/' . $plugin . '/editor_plugin.js';
 				$plugin_array[$plugin] = $file;
@@ -349,9 +350,10 @@ class sem_fixes_admin
 			'bold', 'italic', 'underline', 'strikethrough', '|',
 			'bullist', 'numlist', 'blockquote', '|',
 			'outdent', 'indent', '|',
-			'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
 			'link', 'unlink', 'anchor', '|',
-			'wp_more', 'wp_page',
+			'wp_more', 'wp_page', '|',
+			'emotions', '|',
+			'fullscreen',
 			);
 	} # editor_buttons()
 
@@ -364,9 +366,7 @@ class sem_fixes_admin
 	{
 		return array(
 			'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', '|',
-			'pastetext', 'pasteword', 'removeformat', '|',
-			'media', 'charmap', '|',
-			'spellchecker',
+			'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
 			);
 	} # editor_buttons_2()
 
@@ -379,12 +379,26 @@ class sem_fixes_admin
 	{
 		return array(
 			'tablecontrols', '|',
-			'undo', 'redo', '|',
-			'search', 'replace', '|',
-			'fullscreen', '|',
+			'media', 'charmap', '|',
+			'spellchecker', '|',
 			'wp_help',
 			);
 	} # editor_buttons_3()
+
+
+	#
+	# editor_buttons_4()
+	#
+	
+	function editor_buttons_4($buttons)
+	{
+		return array(
+			'pastetext', 'pasteword', 'removeformat', '|',
+			'fullscreen', '|',
+			'undo', 'redo', '|',
+			'search', 'replace',
+			);
+	} # editor_buttons_4()
 } # sem_fixes_admin
 
 sem_fixes_admin::init();
