@@ -350,9 +350,8 @@ class sem_fixes_admin
 			'bullist', 'numlist', 'blockquote', '|',
 			'outdent', 'indent', '|',
 			'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
-			'link', 'unlink', '|',
-			'wp_more', 'wp_page', '|',
-			'fullscreen',
+			'link', 'unlink', 'anchor', '|',
+			'wp_more', 'wp_page',
 			);
 	} # editor_buttons()
 
@@ -382,6 +381,7 @@ class sem_fixes_admin
 			'tablecontrols', '|',
 			'undo', 'redo', '|',
 			'search', 'replace', '|',
+			'fullscreen', '|',
 			'wp_help',
 			);
 	} # editor_buttons_3()
