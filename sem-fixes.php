@@ -43,14 +43,14 @@ class sem_fixes
 	{
 		# auto-maintain db
 		add_action('maintain_db', array('sem_fixes', 'maintain_db'));
-		add_action('init', array('sem_fixes', 'maintain_db'));
+		
 		if ( !is_admin() )
 		{
 			if ( !wp_next_scheduled('maintain_db') )
 			{
 				wp_schedule_event(time(), 'daily', 'maintain_db');
 			}
-
+			
 			# remove #more-id in more links
 			add_filter('the_content', array('sem_fixes', 'fix_more'), 10000);
 
