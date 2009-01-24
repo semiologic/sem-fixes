@@ -236,13 +236,6 @@ class sem_fixes_admin
 	
 	function fix_plugins()
 	{
-		# tinymce advanced
-		if ( function_exists('tadv_menu') ) 
-		{
-			remove_action('admin_menu', 'tadv_menu');
-			add_action('admin_menu', array('sem_fixes_admin', 'tinymce_advanced_admin_menu'));
-		}
-		
 		# hashcash: disable in admin area, so as to enable ajax replies
 		remove_filter('preprocess_comment', 'wphc_check_hidden_tag');
 	} # fix_plugins()
@@ -301,18 +294,6 @@ class sem_fixes_admin
 	
 	
 	#
-	# tinymce_advanced_admin_menu()
-	#
-	
-	function tinymce_advanced_admin_menu()
-	{
-		$page = add_options_page( 'TinyMCE Advanced', 'TinyMCE Advanced', 'manage_options', 'tinymce-advanced', 'tadv_page' );
-		add_action( "admin_print_scripts-$page", 'tadv_add_scripts' );
-		add_action( "admin_head-$page", 'tadv_admin_head' );
-	} #tinymce_advanced_admin_menu()
-	
-	
-	#
 	# admin_css()
 	#
 	
@@ -347,7 +328,7 @@ class sem_fixes_admin
 		{
 			$folder = plugins_url() . '/' . basename(dirname(__FILE__));
 			
-			foreach ( array('searchreplace', 'table') as $plugin )
+			foreach ( array('advlink', 'searchreplace', 'table') as $plugin )
 			{
 				$file = $folder . '/tinymce/' . $plugin . '/editor_plugin.js';
 				$plugin_array[$plugin] = $file;
