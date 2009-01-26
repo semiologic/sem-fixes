@@ -350,10 +350,8 @@ class sem_fixes_admin
 			'bold', 'italic', 'underline', 'strikethrough', '|',
 			'bullist', 'numlist', 'blockquote', '|',
 			'outdent', 'indent', '|',
-			'link', 'unlink', 'anchor', '|',
 			'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
-			'fullscreen', '|',
-			'wp_help',
+			'link', 'unlink', 'anchor',
 			);
 	} # editor_buttons()
 
@@ -365,10 +363,8 @@ class sem_fixes_admin
 	function editor_buttons_2($buttons)
 	{
 		return array(
-			'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', '|',
-			'media', 'emotions', 'charmap', '|',
-			'wp_more', 'wp_page', '|',
-			'spellchecker',
+			'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', 'backcolor', '|',
+			'media', 'emotions', 'charmap',
 			);
 	} # editor_buttons_2()
 
@@ -381,9 +377,9 @@ class sem_fixes_admin
 	{
 		return array(
 			'tablecontrols', '|',
-			'pastetext', 'pasteword', 'removeformat', '|',
-			'search', 'replace', '|',
-			'undo', 'redo',
+			'wp_more', 'wp_page', '|',
+			'spellchecker','|',
+			'wp_help',
 			);
 	} # editor_buttons_3()
 
@@ -395,6 +391,10 @@ class sem_fixes_admin
 	function editor_buttons_4($buttons)
 	{
 		return array(
+			'pastetext', 'pasteword', 'removeformat', '|',
+			'search', 'replace', '|',
+			'undo', 'redo', '|',
+			'fullscreen', 
 			);
 	} # editor_buttons_4()
 } # sem_fixes_admin
