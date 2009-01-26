@@ -382,8 +382,8 @@ class sem_fixes_admin
 		return array(
 			'tablecontrols', '|',
 			'pastetext', 'pasteword', 'removeformat', '|',
-			'undo', 'redo', '|',
-			'search', 'replace',
+			'search', 'replace', '|',
+			'undo', 'redo',
 			);
 	} # editor_buttons_3()
 
