@@ -301,7 +301,7 @@ class sem_fixes_admin
 	function admin_css()
 	{
 		$folder = plugins_url() . '/' . basename(dirname(__FILE__));
-		$css = $folder . '/js/admin.css';
+		$css = $folder . '/css/admin.css';
 		
 		wp_enqueue_style('sem_fixes', $css, null, '20091018');
 	} # admin_css()
