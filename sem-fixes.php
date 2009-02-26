@@ -6,7 +6,6 @@ Description: A variety of teaks and fixes for WordPress and third party plugins
 Version: 1.8.2 alpha
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
-Update Package: https://members.semiologic.com/media/plugins/sem-fixes/sem-fixes.zip
 */
 
 /*
