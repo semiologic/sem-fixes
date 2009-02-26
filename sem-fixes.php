@@ -32,6 +32,14 @@ $sem_fixes_admin_files = array(
 	'order-categories/category-order.php',
 	);
 
+# Fix IP behind a load balancer
+if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
+	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+} elseif ( isset($_SERVER['HTTP_X_REAL_IP']) ) {
+	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
+}
+
+
 class sem_fixes
 {
 	#
