@@ -84,7 +84,7 @@ class sem_fixes_admin
 	{
 		if ( strpos($_SERVER['REQUEST_URI'], 'admin.php?page=index.php') !== false )
 		{
-			wp_redirect(trailingslashit(get_option('siteurl')) . 'wp-admin/');
+			wp_redirect(admin_url());
 			die;
 		}
 	} # dashboard_link()
