@@ -167,35 +167,33 @@ class sem_fixes_admin
 			case 'link-manager.php';
 			case 'edit-pages.php';
 				$stop = 2;
-				$caps = array();
 				break;
 
 			case 'themes.php':
 				$stop = 2;
-				$caps = array();
 				unset($menu_items[10]); # theme and plugin editors
 				break;
 
 			case 'plugins.php':
 				$stop = 2;
-				$caps = array();
 				unset($menu_items[15]); # theme and plugin editors
 				break;
-
-			default:
+			
+			case 'index.php':
+			case 'edit-comments.php':
+			case 'users.php':
+			case 'profile.php':
+			case 'tools.php':
+			case 'options-general.php':
 				$stop = 1;
-				$caps = array();
+				break;
+			
+			default:
+				# don't reorder menus added by plugins
+				$stop = sizeof($submenu[$key]);
 				break;
 			}
-
-			foreach ( $caps as $cap )
-			{
-				if ( current_user_can($cap) )
-				{
-					$stop++;
-				}
-			}
-
+			
 			$unsortable = array();
 			$sortable = $menu_items;
 			reset($sortable);
