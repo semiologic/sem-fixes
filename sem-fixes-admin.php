@@ -24,12 +24,15 @@ class sem_fixes_admin
 		
 		# Dashboard Link
 		add_action('load-index.php', array('sem_fixes_admin', 'dashboard_link'));
-		
+
 		# Lists in admin area
 		add_action('admin_print_styles', array('sem_fixes_admin', 'admin_css'));
 		
 		# sticky sidebar
 		add_action('load-widgets.php', array('sem_fixes_admin', 'sticky_sidebar'));
+		
+		# Force option refresh
+		add_action('load-widgets.php', array('sem_fixes_admin', 'refresh_widgets'));
 		
 		# tinymce
 		add_filter('tiny_mce_before_init', array('sem_fixes_admin', 'editor_options'), -1000);
@@ -74,6 +77,17 @@ class sem_fixes_admin
 			}
 		}
 	} # sticky_sidebar()
+	
+	
+	#
+	# refresh_widgets()
+	#
+	
+	function refresh_widgets() {
+		if ( !$_POST ) return;
+		$sidebars_widgets = get_option('sidebars_widgets');
+		do_action('update_option_sidebars_widgets', $sidebars_widgets, $sidebars_widgets);
+	} # refresh_widgets()
 	
 	
 	#
