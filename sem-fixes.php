@@ -27,6 +27,7 @@ global $sem_fixes_admin_files;
 		'impostercide.php',
 		'not-to-me.php',
 		'order-categories/category-order.php',
+		'libxml2-fix/libxml2-fix.php',
 		);
 	$sem_fixes_admin_files = array(
 		'mypageorder/mypageorder.php',
@@ -237,7 +238,7 @@ class sem_fixes
 	function widget_calendar($args)
 	{
 		extract($args);
-		echo $before_widget;
+		echo $before_widget;dump('test');
 		if ( !is_admin() )
 		{
 			echo '<div id="calendar_wrap">';
