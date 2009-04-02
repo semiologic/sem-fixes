@@ -227,13 +227,6 @@ class sem_fixes
 		
 		$wp_registered_widgets['calendar']['callback'] = array('sem_fixes', 'widget_calendar');
 		unset($wp_registered_widget_controls['calendar']);
-		
-		global $sem_options;
-		
-		if ( isset($sem_options) && $sem_options['show_search_form'] )
-		{
-			unset($wp_registered_widgets['search']);
-		}
 	} # widgetize()
 	
 	
