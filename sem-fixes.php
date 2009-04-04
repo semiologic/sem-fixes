@@ -238,7 +238,7 @@ class sem_fixes
 	function widget_calendar($args)
 	{
 		extract($args);
-		echo $before_widget;dump('test');
+		echo $before_widget;
 		if ( !is_admin() )
 		{
 			echo '<div id="calendar_wrap">';
