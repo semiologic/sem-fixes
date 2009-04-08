@@ -21,9 +21,6 @@ class sem_fixes_admin
 		
 		# fix plugins
 		add_action('plugins_loaded', array('sem_fixes_admin', 'fix_plugins'), 1000000);
-		
-		# Dashboard Link
-		add_action('load-index.php', array('sem_fixes_admin', 'dashboard_link'));
 
 		# Lists in admin area
 		add_action('admin_print_styles', array('sem_fixes_admin', 'admin_css'));
@@ -88,20 +85,6 @@ class sem_fixes_admin
 		$sidebars_widgets = get_option('sidebars_widgets');
 		do_action('update_option_sidebars_widgets', $sidebars_widgets, $sidebars_widgets);
 	} # refresh_widgets()
-	
-	
-	#
-	# dashboard_link()
-	#
-	
-	function dashboard_link()
-	{
-		if ( strpos($_SERVER['REQUEST_URI'], 'admin.php?page=index.php') !== false )
-		{
-			wp_redirect(admin_url());
-			die;
-		}
-	} # dashboard_link()
 	
 	
 	#
