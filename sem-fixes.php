@@ -75,9 +75,6 @@ class sem_fixes
 		# generator
 		add_filter('the_generator', array('sem_fixes', 'the_generator'));
 
-		# security fix		
-		add_filter('option_active_plugins', array('sem_fixes', 'kill_hack_files'));
-		
 		# tinyMCE
 		add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 		
@@ -449,24 +446,6 @@ class sem_fixes
 			wphc_addhead();
 		}
 	} # hc_addhead()
-	
-
-	#
-	# kill_hack_files()
-	#
-	function kill_hack_files($files)
-	{
-		foreach ( (array) $files as $k => $v )
-		{
-			if ( strpos($v, '..') !== false )
-			{
-				// maybe log the issue and auto-correct the option
-				unset($files[$k]);
-			}
-		}
-		return $files;
-	}
-
 } # sem_fixes
 
 sem_fixes::init();
