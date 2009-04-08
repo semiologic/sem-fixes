@@ -69,9 +69,6 @@ class sem_fixes
 		# fix plugins
 		add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'), 1000000);
 		
-		# fix widgets
-		add_action('init', array('sem_fixes', 'widgetize'));
-		
 		# security fix
 		add_filter('option_default_role', array('sem_fixes', 'default_role'));
 		
@@ -215,38 +212,6 @@ class sem_fixes
 		
 		return $o;
 	} # default_role()
-	
-	
-	#
-	# widgetize()
-	#
-	
-	function widgetize()
-	{
-		global $wp_registered_widgets;
-		global $wp_registered_widget_controls;
-		
-		$wp_registered_widgets['calendar']['callback'] = array('sem_fixes', 'widget_calendar');
-		unset($wp_registered_widget_controls['calendar']);
-	} # widgetize()
-	
-	
-	#
-	# widget_calendar()
-	#
-	
-	function widget_calendar($args)
-	{
-		extract($args);
-		echo $before_widget;
-		if ( !is_admin() )
-		{
-			echo '<div id="calendar_wrap">';
-			get_calendar();
-			echo '</div>';
-		}
-		echo $after_widget;
-	} # widget_calendar()
 	
 
 
