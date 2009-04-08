@@ -129,10 +129,6 @@ class sem_fixes
 	
 	function tiny_mce_config($o)
 	{
-		# http://wordpress.org/support/topic/164217/page/2?replies=69#post-718683
-		
-		$o['compress'] = false;
-		
 		# http://forum.semiologic.com/discussion/4807/iframe-code-disappears-switching-visualhtml/
 		# http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/valid_elements#Full_XHTML_rule_set
 		# assume the stuff below is properly set if they exist already
