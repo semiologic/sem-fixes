@@ -414,8 +414,9 @@ class sem_fixes
 			remove_action('admin_menu', 'wphc_add_options_to_admin');
 			remove_action('widgets_init', 'wphc_widget_init');
 			remove_action('comment_form', 'wphc_add_commentform');
+			remove_action('wp_head', 'wphc_posthead');
 			add_action('comment_form', array('sem_fixes', 'hc_add_message'));
-			add_action('wp_footer', array('sem_fixes', 'hc_add_elt'));
+			add_action('wp_head', array('sem_fixes', 'hc_addhead'));
 		}
 	} # fix_plugins()
 	
@@ -472,26 +473,17 @@ class sem_fixes
 	
 	
 	#
-	# hc_add_elt()
+	# hc_addhead()
 	#
 	
-	function hc_add_elt()
+	function hc_addhead()
 	{
 		# prevent js errors on pages with no comment form
-		if ( is_singular() )
+		if ( is_singular() && comments_open($GLOBALS['wp_query']->get_queried_object_id()) )
 		{
-			echo <<<EOF
-
-<script type="text/javascript">
-if ( !document.getElementById('wphc_value') )
-{
-	document.write('<input type="hidden" id="wphc_value" name="wphc_value" value="" />');
-}
-</script>
-
-EOF;
+			wphc_addhead();
 		}
-	} # hc_add_elt()
+	} # hc_addhead()
 	
 
 	#
