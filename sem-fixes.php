@@ -66,6 +66,9 @@ class sem_fixes
 			add_filter('the_content', array('sem_fixes', 'fix_wysiwyg'), 10000);
 		}
 		
+		# fix widgets
+		add_action('widgets_init', array('sem_fixes', 'widgets_init'), 200);
+		
 		# fix plugins
 		add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'), 1000000);
 		
@@ -94,6 +97,59 @@ class sem_fixes
 			define('MAGPIE_FETCH_TIME_OUT', 4);	// 4 second timeout, instead of 2
 		}
 	} # init()
+	
+	
+	#
+	# widgets_init()
+	#
+	
+	function widgets_init()
+	{
+		global $wp_registered_widgets;
+		
+		foreach ( array_keys($wp_registered_widgets) as $widget_id ) {
+			if ( strpos($widget_id, 'calendar-') === 0 ) {
+				$wp_registered_widgets[$widget_id]['callback'] = array('sem_fixes', 'widget_calendar');
+			}
+		}
+	} # widgets_init()
+	
+	
+	#
+	# widget_calendar()
+	#
+	
+	function widget_calendar($args, $widget_args = 1) {
+		extract( $args, EXTR_SKIP );
+		if ( is_numeric($widget_args) )
+			$widget_args = array( 'number' => $widget_args );
+		$widget_args = wp_parse_args( $widget_args, array( 'number' => -1 ) );
+		extract( $widget_args, EXTR_SKIP );
+		
+		if ( is_admin() ) {
+			echo $before_widget
+				. $before_title . $title . $after_title
+				. $after_widget;
+			return;
+		}
+		
+		$opt = get_option('widget_calendar');
+		extract($opt[$number], EXTR_SKIP);
+		
+		echo $before_widget;
+		
+		if ( $title )
+			echo $before_title . $title . $after_title;
+		
+		ob_start();
+		get_calendar();
+		echo str_replace(
+			'id="wp-calendar"',
+			'id="wp-calendar-' . intval($number) . '" class="wp-calendar"',
+			ob_get_clean());
+		
+		echo $after_widget;
+	} # widget_calendar()
 	
 	
 	#
