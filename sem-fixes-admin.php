@@ -295,8 +295,8 @@ class sem_fixes_admin
 	
 	function admin_css()
 	{
-		$folder = plugins_url() . '/' . basename(dirname(__FILE__));
-		$css = $folder . '/css/admin.css';
+		$folder = plugin_dir_url(__FILE__);
+		$css = $folder . 'css/admin.css';
 		
 		wp_enqueue_style('sem_fixes', $css, null, '20091018');
 	} # admin_css()
@@ -322,11 +322,11 @@ class sem_fixes_admin
 	{
 		if ( get_user_option('rich_editing') == 'true')
 		{
-			$folder = plugins_url() . '/' . basename(dirname(__FILE__));
+			$folder = plugin_dir_url(__FILE__);
 			
 			foreach ( array('advlink', 'emotions', 'searchreplace', 'table') as $plugin )
 			{
-				$file = $folder . '/tinymce/' . $plugin . '/editor_plugin.js';
+				$file = $folder . 'tinymce/' . $plugin . '/editor_plugin.js';
 				$plugin_array[$plugin] = $file;
 			}
 		}
