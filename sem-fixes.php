@@ -66,6 +66,13 @@ class sem_fixes
 			add_filter('the_content', array('sem_fixes', 'fix_wysiwyg'), 10000);
 		}
 		
+		# fix wpautop
+		add_filter('content_save_pre', array('sem_fixes', 'fix_wpautop'), 0);
+		add_filter('excerpt_save_pre', array('sem_fixes', 'fix_wpautop'), 0);
+		add_filter('pre_term_description', array('sem_fixes', 'fix_wpautop'), 0);
+		add_filter('pre_user_description', array('sem_fixes', 'fix_wpautop'), 0);
+		add_filter('pre_link_description', array('sem_fixes', 'fix_wpautop'), 0);
+		
 		# fix widgets
 		add_action('widgets_init', array('sem_fixes', 'widgets_init'), 200);
 		
@@ -261,7 +268,6 @@ class sem_fixes
 		
 		return $o;
 	} # default_role()
-	
 
 
 	#
@@ -302,6 +308,22 @@ class sem_fixes
 			$wpdb->query("OPTIMIZE TABLE $tablename");
 		}
 	} # maintain_db()
+	
+	
+	#
+	# fix_wpautop()
+	# http://core.trac.wordpress.org/ticket/4298
+	#
+	
+	function fix_wpautop($content) {
+		$content = str_replace(array("\r\n", "\r"), "\n", $content);
+		
+		while ( preg_match("/<[^<>]*\n/", $content) ) {
+			$content = preg_replace("/(<[^<>]*)\n+/", "$1", $content);
+		}
+		
+		return $content;
+	} # fix_wpautop()
 	
 	
 	#
