@@ -38,7 +38,123 @@ class sem_fixes_admin
 		add_filter('mce_buttons_2', array('sem_fixes_admin', 'editor_buttons_2'), -1000);
 		add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000);
 		add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000);
+		
+		if ( !defined('WP_POST_REVISIONS') ) {
+			add_action('save_post', array('sem_fixes_admin', 'save_post_revision'));
+		}
 	} # init()
+	
+	
+	#
+	# save_post_revision()
+	#
+	
+	function save_post_revision($rev_id) {
+		global $wpdb;
+		
+		$post = get_post($rev_id);
+		
+		if ( wp_is_post_revision($rev_id) ) {
+			$post_id = $post->post_parent;
+		} else {
+			$post_id = $rev_id;
+		}
+		
+		# drop dup revs
+		$kill_ids = $wpdb->get_col("
+			SELECT	ID
+			FROM	$wpdb->posts
+			WHERE	post_type = 'revision'
+			AND		ID <> " . intval($rev_id) . "
+			AND		post_parent = " . intval($post_id) . "
+			AND		post_content = '" . $wpdb->escape($post->post_content) . "'
+			");
+		
+		if ( $kill_ids ) {
+			foreach ( $kill_ids as $kill_id ) {
+				wp_delete_post_revision($kill_id);
+			}
+		}
+		
+		# stop here for real posts
+		if ( $post_id == $rev_id )
+			return;
+		
+		# drop other potential dup revs
+		$kill_ids = $wpdb->get_col("
+			SELECT	p2.ID
+			FROM	$wpdb->posts as p2
+			JOIN	$wpdb->posts as p1
+			ON		p1.post_parent = p2.post_parent
+			AND		p1.post_type = p2.post_type
+			WHERE	p1.post_type = 'revision'
+			AND		p1.post_parent = " . intval($post_id) . "
+			AND		p1.post_content = p2.post_content
+			AND		p1.ID > p2.ID
+			");
+
+		if ( $kill_ids ) {
+			foreach ( $kill_ids as $kill_id ) {
+				wp_delete_post_revision($kill_id);
+			}
+		}
+		
+		# drop near-empty revs
+		$kill_ids = $wpdb->get_col("
+			SELECT	ID
+			FROM	$wpdb->posts
+			WHERE	post_type = 'revision'
+			AND		post_parent = " . intval($post_id) . "
+			AND		LENGTH(post_content) <= 50
+			");
+		
+		if ( $kill_ids ) {
+			foreach ( $kill_ids as $kill_id ) {
+				wp_delete_post_revision($kill_id);
+			}
+		}
+		
+		# drop adjascent revs
+		$kill_ids = $wpdb->get_col("
+			SELECT	p2.ID
+			FROM	$wpdb->posts as p2
+			JOIN	$wpdb->posts as p1
+			ON		p1.post_parent = p2.post_parent
+			AND		p1.post_type = p2.post_type
+			WHERE	p1.post_type = 'revision'
+			AND		p1.post_parent = " . intval($post_id) . "
+			AND		DATEDIFF(p1.post_date, p2.post_date) < 1
+			AND		p1.post_date >= p2.post_date
+			AND		p1.ID <> p2.ID
+			");
+
+		if ( $kill_ids ) {
+			foreach ( $kill_ids as $kill_id ) {
+				wp_delete_post_revision($kill_id);
+			}
+		}
+		
+		# drop near-identical revs
+		$kill_ids = $wpdb->get_col("
+			SELECT	p2.ID
+			FROM	$wpdb->posts as p2
+			JOIN	$wpdb->posts as p1
+			ON		p1.post_parent = p2.post_parent
+			AND		p1.post_type = p2.post_type
+			WHERE	p1.post_type = 'revision'
+			AND		p1.post_parent = " . intval($post_id) . "
+			AND		DATEDIFF(p1.post_date, p2.post_date) <= 7
+			AND		ABS( LENGTH(p1.post_content) - LENGTH(p2.post_content) ) <= 50
+			AND		p1.post_date >= p2.post_date
+			AND		p1.ID <> p2.ID
+			");
+
+		if ( $kill_ids ) {
+			foreach ( $kill_ids as $kill_id ) {
+				wp_delete_post_revision($kill_id);
+			}
+		}
+	} # save_post_revision()
 	
 	
 	#
@@ -144,7 +260,8 @@ class sem_fixes_admin
 			add_filter('pre_term_description', 'wp_filter_post_kses');
 		}
 	} # term_kses()
-
+	
+	
 	#
 	# sort_admin_menu()
 	#
