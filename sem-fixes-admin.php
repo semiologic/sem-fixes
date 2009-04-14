@@ -50,15 +50,16 @@ class sem_fixes_admin
 	#
 	
 	function save_post_revision($rev_id) {
-		global $wpdb;
-		
-		$post = get_post($rev_id);
-		
-		if ( wp_is_post_revision($rev_id) ) {
-			$post_id = $post->post_parent;
+		if ( wp_is_post_autosave($rev_id) ) {
+			return;
+		} elseif ( $post_id = wp_is_post_revision($rev_id) ) {
+			# do nothing
 		} else {
 			$post_id = $rev_id;
 		}
+		
+		global $wpdb;
+		$post = get_post($rev_id);
 		
 		# drop dup revs
 		$kill_ids = $wpdb->get_col("
