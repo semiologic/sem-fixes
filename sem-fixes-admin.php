@@ -169,6 +169,7 @@ class sem_fixes_admin
 			case 'themes.php':
 				$stop = 2;
 				unset($menu_items[10]); # theme and plugin editors
+				unset($menu_items[15]); # add new theme
 				break;
 
 			case 'plugins.php':
