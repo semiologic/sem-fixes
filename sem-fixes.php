@@ -103,7 +103,32 @@ class sem_fixes
 		if ( !defined('MAGPIE_FETCH_TIME_OUT') ) {
 			define('MAGPIE_FETCH_TIME_OUT', 4);	// 4 second timeout, instead of 2
 		}
+		
+		add_action('login_head', array('sem_fixes', 'fix_www_pref'));
 	} # init()
+	
+	
+	#
+	# fix_www_pref()
+	#
+	
+	function fix_www_pref()
+	{
+		$home_url = get_option('home');
+		$site_url = get_option('siteurl');
+		
+		$home_www = strpos($home_url, '://www.') !== false;
+		$site_www = strpos($site_url, '://www.') !== false;
+		
+		if ( $home_www != $site_www ) {
+			if ( $home_www ) {
+				$site_url = str_replace('://', '://www.', $site_url);
+			} else {
+				$site_url = str_replace('://www.', '://', $site_url);
+			}
+			update_option('site_url', $site_url);
+		}
+	} # fix_www_pref()
 	
 	
 	#
