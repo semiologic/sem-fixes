@@ -34,10 +34,16 @@ global $sem_fixes_admin_files;
 		);
 
 # Fix IP behind a load balancer
-if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
-	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-} elseif ( isset($_SERVER['HTTP_X_REAL_IP']) ) {
-	$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
+if ( function_exists('filter_var') ) {
+	if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) )
+		$_SERVER['REMOTE_ADDR'] = filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE);
+	elseif ( isset($_SERVER['HTTP_X_REAL_IP']) && filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) )
+		$_SERVER['REMOTE_ADDR'] = filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE);
+} else {
+	if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) )
+		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	if ( isset($_SERVER['HTTP_X_REAL_IP']) )
+		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
 }
 
 
