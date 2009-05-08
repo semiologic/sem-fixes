@@ -24,9 +24,7 @@ global $sem_fixes_admin_files;
 
 	$sem_fixes_files = array(
 		'impostercide.php',
-		'not-to-me.php',
 		'order-categories/category-order.php',
-		'libxml2-fix/libxml2-fix.php',
 		);
 	$sem_fixes_admin_files = array(
 		'mypageorder/mypageorder.php',
@@ -45,6 +43,10 @@ if ( function_exists('filter_var') ) {
 		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
 }
 
+# Fix libxml2
+if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2') ) ) {
+	$sem_fixes_files[] = 'libxml2-fix/libxml2-fix.php';
+}
 
 class sem_fixes
 {
@@ -78,9 +80,6 @@ class sem_fixes
 		add_filter('pre_user_description', array('sem_fixes', 'fix_wpautop'), 0);
 		add_filter('pre_link_description', array('sem_fixes', 'fix_wpautop'), 0);
 		
-		# fix widgets
-		add_action('widgets_init', array('sem_fixes', 'widgets_init'), 200);
-		
 		# fix plugins
 		add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'), 1000000);
 		
@@ -92,11 +91,6 @@ class sem_fixes
 
 		# tinyMCE
 		add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
-		
-		# move wp version check
-		remove_action( 'init', 'wp_version_check' );
-		add_action( 'wp_footer', 'wp_version_check', 10000 );
-		add_action( 'admin_footer', 'wp_version_check', 10000 );
 		
 		# strip double slashes from permalink
 		add_filter('the_permalink', array('sem_fixes', 'fix_permalink'), 1000);
@@ -131,59 +125,6 @@ class sem_fixes
 			update_option('site_url', $site_url);
 		}
 	} # fix_www_pref()
-	
-	
-	#
-	# widgets_init()
-	#
-	
-	function widgets_init()
-	{
-		global $wp_registered_widgets;
-		
-		foreach ( array_keys($wp_registered_widgets) as $widget_id ) {
-			if ( strpos($widget_id, 'calendar-') === 0 ) {
-				$wp_registered_widgets[$widget_id]['callback'] = array('sem_fixes', 'widget_calendar');
-			}
-		}
-	} # widgets_init()
-	
-	
-	#
-	# widget_calendar()
-	#
-	
-	function widget_calendar($args, $widget_args = 1) {
-		extract( $args, EXTR_SKIP );
-		if ( is_numeric($widget_args) )
-			$widget_args = array( 'number' => $widget_args );
-		$widget_args = wp_parse_args( $widget_args, array( 'number' => -1 ) );
-		extract( $widget_args, EXTR_SKIP );
-		
-		if ( is_admin() ) {
-			echo $before_widget
-				. $before_title . $title . $after_title
-				. $after_widget;
-			return;
-		}
-		
-		$opt = get_option('widget_calendar');
-		extract($opt[$number], EXTR_SKIP);
-		
-		echo $before_widget;
-		
-		if ( $title )
-			echo $before_title . $title . $after_title;
-		
-		ob_start();
-		get_calendar();
-		echo str_replace(
-			'id="wp-calendar"',
-			'id="wp-calendar-' . intval($number) . '" class="wp-calendar"',
-			ob_get_clean());
-		
-		echo $after_widget;
-	} # widget_calendar()
 	
 	
 	#
@@ -370,14 +311,13 @@ class sem_fixes
 	
 	function fix_wysiwyg($content)
 	{
-		if ( ( $option = get_option('fix_wysiwyg') ) === false )
-		{
+		$option = get_option('fix_wysiwyg');
+		
+		if ( $option === false )
 			add_option('fix_wysiwyg', '0');
-		}
-		elseif ( !$option )
-		{
+		
+		if ( !$option )
 			return $content;
-		}
 		
 		$find_replace = array(
 			# broken paragraph tag
@@ -417,18 +357,9 @@ class sem_fixes
 			~isx" => "<p style=\"text-align: right;\">$1</p>",
 			);
 		
-		$find = array();
-		$replace = array();
-		
-		foreach ( $find_replace as $key => $val )
-		{
-			$find[] = $key;
-			$replace[] = $val;
-		}
-		
 		$content = preg_replace(
-			$find,
-			$replace,
+			array_keys($find_replace),
+			array_values($replace),
 			$content
 			);
 		
