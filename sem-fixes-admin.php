@@ -17,7 +17,7 @@ if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
 	add_action('save_post', array('sem_fixes_admin', 'save_post_revision'));
 
 # http://core.trac.wordpress.org/ticket/9876
-#add_action('admin_menu', array('sem_fixes_admin', 'sort_admin_menu'), 1000000);
+add_action('admin_menu', array('sem_fixes_admin', 'sort_admin_menu'), 1000000);
 
 # tinymce
 add_filter('tiny_mce_before_init', array('sem_fixes_admin', 'editor_options'), -1000);
@@ -156,75 +156,35 @@ class sem_fixes_admin {
 	function sort_admin_menu() {
 		global $submenu;
 		
-		#dump($submenu);
-		
-		foreach ( $submenu as $key => $menu_items ) {
-			switch ( $key ) {
-			case 'edit.php':
-			case 'upload.php';
-			case 'link-manager.php';
-			case 'edit-pages.php';
-				$stop = 2;
-				break;
-
-			case 'themes.php':
-				$stop = 2;
-				unset($menu_items[10]); # theme and plugin editors
-				unset($menu_items[15]); # add new theme
-				break;
-
-			case 'plugins.php':
-				$stop = 2;
-				unset($menu_items[15]); # theme and plugin editors
-				break;
-			
-			case 'index.php':
-			case 'edit-comments.php':
-			case 'users.php':
-			case 'profile.php':
-			case 'tools.php':
-			case 'options-general.php':
-				$stop = 1;
-				break;
-			
-			default:
-				# don't reorder menus added by plugins
-				$stop = sizeof($submenu[$key]);
-				break;
+		foreach ( $submenu as $id => $data ) {
+			$to_sort = array();
+			while ( $_data = array_pop($data) ) {
+				// Default WP items don't have $data[3] title set
+				if ( isset($_data[3]) ) {
+					$to_sort[] = $_data;
+				} else {
+					$data[] = $_data;
+					break;
+				}
 			}
-			
-			$unsortable = array();
-			$sortable = $menu_items;
-			reset($sortable);
-
-			while ( $stop != 0 ) {
-				$mkey = key($sortable);
-				$unsortable[$mkey] = current($sortable);
-				unset($sortable[$mkey]);
-
-				$stop--;
-			}
-
-			uasort($sortable, array('sem_fixes_admin', 'menu_nat_sort'));
-
-			$submenu[$key] = array_merge($unsortable, $sortable);
-			
-			if ( count($submenu[$key]) == 1 ) {
-				unset($submenu[$key]);
-			}
+			usort($to_sort, array('sem_fixes_admin', 'strnatcasecmp_submenu'));
+			$data = array_merge($data, $to_sort);
+			$submenu[$id] = $data;
 		}
 	} # sort_admin_menu()
 	
 	
 	/**
-	 * menu_nat_sort()
+	 * strnatcasecmp_submenu()
 	 *
-	 * @return void
+	 * @param submenu item $a
+	 * @param submenu item $b
+	 * @return -1|0|1
 	 **/
 	
-	function menu_nat_sort($a, $b) {
-		return strnatcmp($a[0], $b[0]);
-	} # menu_nat_sort()
+	function strnatcasecmp_submenu($a, $b) {
+		return strnatcasecmp($a[0], $b[0]);
+	} # strnatcasecmp_submenu()
 	
 	
 	/**
