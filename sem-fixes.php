@@ -46,6 +46,7 @@ if ( function_exists('filter_var') ) {
 		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
 }
 
+
 /**
  * sem_fixes
  *
@@ -393,7 +394,6 @@ EOS;
 } # sem_fixes
 
 
-if ( is_admin() ) {
+if ( is_admin() )
 	include dirname(__FILE__) . '/sem-fixes-admin.php';
-}
 ?>
