@@ -12,9 +12,6 @@ add_filter('pre_term_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_user_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_link_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
 
-# http://core.trac.wordpress.org/ticket/9877
-add_action('admin_print_styles', array('sem_fixes_admin', 'admin_css'));
-
 # http://core.trac.wordpress.org/ticket/9843
 if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
 	add_action('save_post', array('sem_fixes_admin', 'save_post_revision'));
@@ -47,20 +44,6 @@ class sem_fixes_admin {
 		
 		return $content;
 	} # fix_wpautop()
-	
-	
-	/**
-	 * admin_css()
-	 *
-	 * @return void
-	 **/
-	
-	function admin_css() {
-		$folder = plugin_dir_url(__FILE__);
-		$css = $folder . 'css/admin.css';
-		
-		wp_enqueue_style('sem_fixes', $css, null, '20091018');
-	} # admin_css()
 	
 	
 	/**
