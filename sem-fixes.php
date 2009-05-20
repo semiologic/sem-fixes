@@ -56,7 +56,9 @@ if ( function_exists('filter_var') ) {
 # auto-maintain db
 # http://core.trac.wordpress.org/ticket/9741
 add_action('maintain_db', array('sem_fixes', 'maintain_db'));
-wp_schedule_event(time(), 'daily', 'maintain_db');
+
+if ( !wp_next_scheduled('maintain_db') )
+	wp_schedule_event(time(), 'daily', 'maintain_db');
 
 # give Magpie a litte bit more time
 if ( !defined('MAGPIE_FETCH_TIME_OUT') )
