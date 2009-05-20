@@ -157,6 +157,9 @@ class sem_fixes_admin {
 		global $submenu;
 		
 		foreach ( $submenu as $id => $data ) {
+			if ( !in_array($id, array('index.php', 'edit.php', 'upload.php', 'link-manager.php', 'edit-pages.php', 'edit-comments.php', 'themes.php', 'plugins.php', 'users.php', 'tools.php', 'options-general.php')) )
+				continue;
+			
 			$to_sort = array();
 			while ( $_data = array_pop($data) ) {
 				// Default WP items don't have $data[3] title set
