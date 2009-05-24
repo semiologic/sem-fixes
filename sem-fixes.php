@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins
-Version: 1.9 beta
+Version: 1.9 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes-info
@@ -47,6 +47,9 @@ if ( function_exists('filter_var') ) {
 	elseif ( isset($_SERVER['HTTP_X_REAL_IP']) )
 		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
 }
+
+
+load_plugin_textdomain('sem-fixes', null, dirname(__FILE__) . '/lang');
 
 
 /**
@@ -330,19 +333,19 @@ class sem_fixes {
 
 		switch( $options['moderation'] ) {
 		case 'delete':
-			$verb = 'deleted';
+			$warning = __('Wordpress Hashcash needs javascript to work, but your browser has javascript disabled. Your comment will be deleted!', 'sem-fixes');
 			break;
 		case 'akismet':
-			$verb = 'queued in Akismet';
+			$warning = __('Wordpress Hashcash needs javascript to work, but your browser has javascript disabled. Your comment will be queued in Akismet!', 'sem-fixes');
 			break;
 		case 'moderate':
 		default:
-			$verb = 'placed in moderation';
+			$warning = __('Wordpress Hashcash needs javascript to work, but your browser has javascript disabled. Your comment will be placed in moderation!', 'sem-fixes');
 			break;
 		}
 		
-		echo '<input type="hidden" id="wphc_value" name="wphc_value" value=""/>';
-		echo '<noscript><small>Wordpress Hashcash needs javascript to work, but your browser has javascript disabled. Your comment will be '.$verb.'!</small></noscript>';
+		echo '<input type="hidden" id="wphc_value" name="wphc_value" value="" />' . "\n";
+		echo '<noscript><p><strong>' . $warning . '</stron></p></noscript>' . "\n";
 	} # hc_add_message()
 	
 	
@@ -355,8 +358,6 @@ class sem_fixes {
 	function hc_addhead() {
 		if ( !is_singular() )
 			return;
-		
-		global $wp_query;
 		
 		$hc_js = wphc_getjs();
 		$hc_enable = <<<EOS
