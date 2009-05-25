@@ -2,7 +2,7 @@
 /*
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
-Description: A variety of teaks and fixes for WordPress and third party plugins
+Description: A variety of teaks and fixes for WordPress and third party plugins.
 Version: 1.9 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
@@ -79,6 +79,7 @@ if ( !is_admin() ) {
 		add_filter('the_content', array('sem_fixes', 'fix_wysiwyg'), 10000);
 
 	# kill generator
+	remove_action('wp_head', 'wp_generator');
 	add_filter('the_generator', array('sem_fixes', 'the_generator'));
 }
 
