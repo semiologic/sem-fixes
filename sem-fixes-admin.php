@@ -5,6 +5,9 @@
  * @package Semiologic Fixes
  **/
 
+# http://core.trac.wordpress.org/ticket/10054
+add_action('admin_head-plugins.php', array('sem_fixes_admin', 'plugins_css'));
+
 # http://core.trac.wordpress.org/ticket/4298
 add_filter('content_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('excerpt_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
@@ -28,6 +31,28 @@ add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000)
 add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000);
 
 class sem_fixes_admin {
+	/**
+	 * plugins_css()
+	 *
+	 * @return void
+	 **/
+
+	function plugins_css() {
+		echo <<<EOS
+<style type="text/css">
+tr.plugin-update-tr .update-message {
+	margin: 5px;
+	padding: 3px 5px;
+	background-color: #fffbe4;
+	border: solid 1px #dfdfdf;
+	-moz-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+</style>
+EOS;
+	} # plugins_css()
 	/**
 	 * fix_wpautop()
 	 *
