@@ -5,6 +5,9 @@
  * @package Semiologic Fixes
  **/
 
+# http://core.trac.wordpress.org/ticket/9935
+add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
+
 # http://core.trac.wordpress.org/ticket/10054
 add_action('admin_head-plugins.php', array('sem_fixes_admin', 'plugins_css'));
 
@@ -69,6 +72,26 @@ EOS;
 		
 		return $content;
 	} # fix_wpautop()
+	
+	
+	/**
+	 * get_comment_9935()
+	 * 
+	 * @see http://core.trac.wordpress.org/ticket/9935
+	 * 
+	 * @param  stdclass $comment comment to gets.
+	 * @return stdclass comment to be edited
+	 */
+	function get_comment_9935($comment) {
+		static $once = true;
+		
+		if ($once) {
+			$once = false;
+			$comment = get_comment_to_edit($comment->comment_ID);			
+		}
+		
+		return $comment;								
+	} # get_comment_9935()
 	
 	
 	/**
