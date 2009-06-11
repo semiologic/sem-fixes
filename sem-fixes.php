@@ -28,26 +28,6 @@ if ( is_admin() && file_exists(WP_PLUGIN_DIR . '/mypageorder/mypageorder.php') )
 if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2') ) && file_exists(WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php') )
 	include WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php';
 
-// see http://core.trac.wordpress.org/ticket/9235
-// Correct comment's ip address with X-Forwarded-For http header if you are behind a proxy or load balancer.
-if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
-	// this one can have multiple IPs separated by a coma
-	$_SERVER['HTTP_X_FORWARDED_FOR'] = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-	$_SERVER['HTTP_X_FORWARDED_FOR'] = $_SERVER['HTTP_X_FORWARDED_FOR'][0];
-}
-
-if ( function_exists('filter_var') ) {
-	if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) )
-		$_SERVER['REMOTE_ADDR'] = filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE);
-	elseif ( isset($_SERVER['HTTP_X_REAL_IP']) && filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) )
-		$_SERVER['REMOTE_ADDR'] = filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE);
-} else {
-	if ( isset($_SERVER['HTTP_X_FORWARDED_FOR']) )
-		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-	elseif ( isset($_SERVER['HTTP_X_REAL_IP']) )
-		$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
-}
-
 
 load_plugin_textdomain('sem-fixes', null, dirname(__FILE__) . '/lang');
 
