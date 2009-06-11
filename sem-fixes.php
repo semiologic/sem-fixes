@@ -58,13 +58,6 @@ load_plugin_textdomain('sem-fixes', null, dirname(__FILE__) . '/lang');
  * @package Semiologic Fixes
  **/
 
-# auto-maintain db
-# http://core.trac.wordpress.org/ticket/9741
-add_action('maintain_db', array('sem_fixes', 'maintain_db'));
-
-if ( !wp_next_scheduled('maintain_db') )
-	wp_schedule_event(time(), 'daily', 'maintain_db');
-
 # give Magpie a litte bit more time
 if ( !defined('MAGPIE_FETCH_TIME_OUT') )
 	define('MAGPIE_FETCH_TIME_OUT', 4);	// 4 second timeout, instead of 2
@@ -93,37 +86,6 @@ add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'));
 
 class sem_fixes {
-	/**
-	 * maintain_db()
-	 *
-	 * @return void
-	 **/
-	
-	function maintain_db() {
-		global $wpdb;
-		
-		$tablelist = $wpdb->get_results("SHOW TABLE STATUS LIKE '$wpdb->prefix%'", ARRAY_N);
-		
-		foreach ( $tablelist as $table ) {
-			$tablename = $table[0];
-			
-			if ( strtoupper($table[1]) != 'MYISAM' )
-				continue;
-			
-			$check = $wpdb->get_row("CHECK TABLE $tablename", ARRAY_N);
-			
-			if ( $check[2] == 'error' ) {
-				$repair = $wpdb->get_row("REPAIR TABLE $tablename", ARRAY_N);
-				
-				if ( $repair[3] != 'OK' )
-					continue;
-			}
-			
-			$wpdb->query("OPTIMIZE TABLE $tablename");
-		}
-	} # maintain_db()
-	
-	
 	/**
 	 * fix_more()
 	 *
