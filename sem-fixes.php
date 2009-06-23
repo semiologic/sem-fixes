@@ -6,7 +6,7 @@ Description: A variety of teaks and fixes for WordPress and third party plugins.
 Version: 1.9 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
-Text Domain: sem-fixes-info
+Text Domain: sem-fixes
 Domain Path: /lang
 */
 
