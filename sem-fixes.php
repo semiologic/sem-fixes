@@ -31,6 +31,12 @@ if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('
 
 load_plugin_textdomain('sem-fixes', null, dirname(__FILE__) . '/lang');
 
+# fix shortcodes
+if ( @ini_get('pcre.backtrack_limit') <= 750000 )
+	@ini_set('pcre.backtrack_limit', 750000);
+if ( @ini_get('pcre.recursion_limit') <= 250000 )
+	@ini_set('pcre.recursion_limit', 250000);
+
 
 /**
  * sem_fixes
