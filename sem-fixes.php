@@ -20,13 +20,13 @@ http://www.mesoconcepts.com/license/
 **/
 
 if ( file_exists(WP_PLUGIN_DIR . '/order-categories/category-order.php') )
-	include WP_PLUGIN_DIR . '/order-categories/category-order.php';
+	include_once WP_PLUGIN_DIR . '/order-categories/category-order.php';
 
 if ( is_admin() && file_exists(WP_PLUGIN_DIR . '/mypageorder/mypageorder.php') )
-	include WP_PLUGIN_DIR . '/mypageorder/mypageorder.php';
+	include_once WP_PLUGIN_DIR . '/mypageorder/mypageorder.php';
 
 if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2') ) && file_exists(WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php') )
-	include WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php';
+	include_once WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php';
 
 
 load_plugin_textdomain('sem-fixes', null, dirname(__FILE__) . '/lang');
