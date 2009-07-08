@@ -309,15 +309,7 @@ class sem_fixes {
 			return;
 		
 		$hc_js = wphc_getjs();
-		$hc_enable = <<<EOS
-
-addLoadEvent(function(){
-	if ( document.getElementById('wphc_value') )
-		document.getElementById('wphc_value').value=wphc();
-});
-
-EOS;
-
+		
 		echo <<<EOS
 
 <script type="text/javascript">
@@ -338,8 +330,10 @@ function addLoadEvent(func) {
 
 $hc_js
 
-$hc_enable
-
+addLoadEvent(function(){
+	if ( document.getElementById('wphc_value') )
+		document.getElementById('wphc_value').value=wphc();
+});
 //-->
 </script>
 
