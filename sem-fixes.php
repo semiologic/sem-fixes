@@ -29,7 +29,7 @@ if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('
 	include_once WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php';
 
 
-load_plugin_textdomain('sem-fixes', null, dirname(__FILE__) . '/lang');
+load_plugin_textdomain('sem-fixes', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
 
 /**
