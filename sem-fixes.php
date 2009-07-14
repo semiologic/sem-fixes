@@ -49,6 +49,9 @@ if ( @ini_get('pcre.recursion_limit') <= 250000 )
 	@ini_set('pcre.recursion_limit', 250000);
 
 if ( !is_admin() ) {
+	# add uninitialized akismet option
+	add_option('akismet_connectivity_time', 0);
+	
 	# remove #more-id in more links
 	add_filter('the_content_more_link', array('sem_fixes', 'fix_more'), 10000);
 
