@@ -186,7 +186,7 @@ class sem_fixes_admin {
 			$to_sort = array();
 			while ( $_data = array_pop($data) ) {
 				// Default WP items don't have $data[3] title set
-				if ( isset($_data[3]) ) {
+				if ( !empty($_data[3]) ) {
 					$to_sort[] = $_data;
 				} else {
 					$data[] = $_data;
