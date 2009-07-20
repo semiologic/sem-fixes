@@ -191,7 +191,7 @@ class sem_fixes {
 		
 		wp_clear_scheduled_hook('do_generic_ping');
 		wp_schedule_single_event(time(), 'do_generic_ping');
-		set_transient('last_ping', time(), time() + 1800);
+		set_transient('last_ping', time(), time() + 3600);
 	} # do_generic_ping()
 	
 	
