@@ -68,6 +68,10 @@ if ( !is_admin() ) {
 # http://core.trac.wordpress.org/ticket/9873
 add_action('login_head', array('sem_fixes', 'fix_www_pref'));
 
+# http://core.trac.wordpress.org/ticket/6698
+if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
+	sem_fixes::do_generic_ping();
+
 # http://core.trac.wordpress.org/ticket/9874
 add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 
@@ -173,6 +177,22 @@ class sem_fixes {
 			update_option('site_url', $site_url);
 		}
 	} # fix_www_pref()
+	
+	
+	/**
+	 * do_generic_ping()
+	 *
+	 * @return void
+	 **/
+
+	function do_generic_ping() {
+		if ( get_transient('last_ping') )
+			return;
+		
+		wp_clear_scheduled_hook('do_generic_ping');
+		wp_schedule_single_event(time(), 'do_generic_ping');
+		set_transient('last_ping', time(), time() + 1800);
+	} # do_generic_ping()
 	
 	
 	/**
