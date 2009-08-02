@@ -48,36 +48,6 @@ if ( @ini_get('pcre.backtrack_limit') <= 750000 )
 if ( @ini_get('pcre.recursion_limit') <= 250000 )
 	@ini_set('pcre.recursion_limit', 250000);
 
-if ( !is_admin() ) {
-	# add uninitialized akismet option
-	add_option('akismet_connectivity_time', 0);
-	
-	# remove #more-id in more links
-	add_filter('the_content_more_link', array('sem_fixes', 'fix_more'), 10000);
-
-	# fix wysiwyg
-	add_option('fix_wysiwyg', '0');
-	if ( get_option('fix_wysiwyg') )
-		add_filter('the_content', array('sem_fixes', 'fix_wysiwyg'), 10000);
-
-	# kill generator
-	remove_action('wp_head', 'wp_generator');
-	add_filter('the_generator', array('sem_fixes', 'the_generator'));
-}
-
-# http://core.trac.wordpress.org/ticket/9873
-add_action('login_head', array('sem_fixes', 'fix_www_pref'));
-
-# http://core.trac.wordpress.org/ticket/6698
-if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
-	sem_fixes::do_generic_ping();
-
-# http://core.trac.wordpress.org/ticket/9874
-add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
-
-# fix plugins
-add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'));
-
 class sem_fixes {
 	/**
 	 * fix_more()
@@ -367,4 +337,35 @@ EOS;
 
 if ( is_admin() )
 	include dirname(__FILE__) . '/sem-fixes-admin.php';
+
+
+if ( !is_admin() ) {
+	# add uninitialized akismet option
+	add_option('akismet_connectivity_time', 0);
+	
+	# remove #more-id in more links
+	add_filter('the_content_more_link', array('sem_fixes', 'fix_more'), 10000);
+
+	# fix wysiwyg
+	add_option('fix_wysiwyg', '0');
+	if ( get_option('fix_wysiwyg') )
+		add_filter('the_content', array('sem_fixes', 'fix_wysiwyg'), 10000);
+
+	# kill generator
+	remove_action('wp_head', 'wp_generator');
+	add_filter('the_generator', array('sem_fixes', 'the_generator'));
+}
+
+# http://core.trac.wordpress.org/ticket/9873
+add_action('login_head', array('sem_fixes', 'fix_www_pref'));
+
+# http://core.trac.wordpress.org/ticket/6698
+if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
+	sem_fixes::do_generic_ping();
+
+# http://core.trac.wordpress.org/ticket/9874
+add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
+
+# fix plugins
+add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'));
 ?>

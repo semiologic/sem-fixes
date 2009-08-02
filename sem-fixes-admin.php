@@ -5,31 +5,6 @@
  * @package Semiologic Fixes
  **/
 
-# http://core.trac.wordpress.org/ticket/9935
-add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
-
-# http://core.trac.wordpress.org/ticket/4298
-add_filter('content_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('excerpt_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('pre_term_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('pre_user_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('pre_link_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
-
-# http://core.trac.wordpress.org/ticket/9843
-if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
-	add_action('save_post', array('sem_fixes_admin', 'save_post_revision'));
-
-# http://core.trac.wordpress.org/ticket/9876
-add_action('admin_menu', array('sem_fixes_admin', 'sort_admin_menu'), 1000000);
-
-# tinymce
-add_filter('tiny_mce_before_init', array('sem_fixes_admin', 'editor_options'), -1000);
-add_filter('mce_external_plugins', array('sem_fixes_admin', 'editor_plugin'), 1000);
-add_filter('mce_buttons', array('sem_fixes_admin', 'editor_buttons'), -1000);
-add_filter('mce_buttons_2', array('sem_fixes_admin', 'editor_buttons_2'), -1000);
-add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000);
-add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000);
-
 class sem_fixes_admin {
 	/**
 	 * fix_wpautop()
@@ -314,4 +289,29 @@ class sem_fixes_admin {
 			);
 	} # editor_buttons_4()
 } # sem_fixes_admin
+
+# http://core.trac.wordpress.org/ticket/9935
+add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
+
+# http://core.trac.wordpress.org/ticket/4298
+add_filter('content_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
+add_filter('excerpt_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
+add_filter('pre_term_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
+add_filter('pre_user_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
+add_filter('pre_link_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
+
+# http://core.trac.wordpress.org/ticket/9843
+if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
+	add_action('save_post', array('sem_fixes_admin', 'save_post_revision'));
+
+# http://core.trac.wordpress.org/ticket/9876
+add_action('admin_menu', array('sem_fixes_admin', 'sort_admin_menu'), 1000000);
+
+# tinymce
+add_filter('tiny_mce_before_init', array('sem_fixes_admin', 'editor_options'), -1000);
+add_filter('mce_external_plugins', array('sem_fixes_admin', 'editor_plugin'), 1000);
+add_filter('mce_buttons', array('sem_fixes_admin', 'editor_buttons'), -1000);
+add_filter('mce_buttons_2', array('sem_fixes_admin', 'editor_buttons_2'), -1000);
+add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000);
+add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000);
 ?>
