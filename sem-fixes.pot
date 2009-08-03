@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.9\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-07-16 00:59+0200\n"
+"POT-Creation-Date: 2009-08-03 18:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,19 +24,19 @@ msgstr ""
 msgid "A variety of teaks and fixes for WordPress and third party plugins."
 msgstr ""
 
-#: sem-fixes.php:288
+#: sem-fixes.php:278
 msgid ""
 "Wordpress Hashcash needs javascript to work, but your browser has javascript "
 "disabled. Your comment will be deleted!"
 msgstr ""
 
-#: sem-fixes.php:291
+#: sem-fixes.php:281
 msgid ""
 "Wordpress Hashcash needs javascript to work, but your browser has javascript "
 "disabled. Your comment will be queued in Akismet!"
 msgstr ""
 
-#: sem-fixes.php:295
+#: sem-fixes.php:285
 msgid ""
 "Wordpress Hashcash needs javascript to work, but your browser has javascript "
 "disabled. Your comment will be placed in moderation!"
