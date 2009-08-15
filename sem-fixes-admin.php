@@ -288,6 +288,21 @@ class sem_fixes_admin {
 			'fullscreen', 
 			);
 	} # editor_buttons_4()
+	
+	
+	/**
+	 * admin_print_scripts()
+	 *
+	 * @return void
+	 **/
+
+	function admin_print_scripts() {
+		$folder = plugin_dir_url(__FILE__);
+		wp_deregister_script('common');
+		wp_deregister_script('admin-widgets');
+		wp_register_script('common', $folder . 'js/common.js', array('jquery', 'hoverIntent', 'utils'), '20090815', true);
+		wp_register_script('admin-widgets', $folder . 'js/widgets.js', array('jquery-ui-sortable', 'jquery-ui-draggable', 'jquery-ui-droppable'), '20090815', true);
+	} # admin_print_scripts()
 } # sem_fixes_admin
 
 # http://core.trac.wordpress.org/ticket/9935
@@ -314,4 +329,7 @@ add_filter('mce_buttons', array('sem_fixes_admin', 'editor_buttons'), -1000);
 add_filter('mce_buttons_2', array('sem_fixes_admin', 'editor_buttons_2'), -1000);
 add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000);
 add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000);
+
+# scripts
+add_action('admin_print_scripts', array('sem_fixes_admin', 'admin_print_scripts'));
 ?>
