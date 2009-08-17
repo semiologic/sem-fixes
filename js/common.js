@@ -196,9 +196,10 @@ jQuery(document).ready( function($) {
 	.addClass('below-h2');
 	//$.log('lock div.updated, div.error')
 
-	$('div.updated, div.error').not('.below-h2')
-	.insertAfter($('div.wrap').children('h2:first'));
-	//$.log('move div.updated, div.error');
+	$('div.updated, div.error')
+	.not('.below-h2')
+	.insertAfter('div.wrap h2:first');
+	//$.log('moved div.updated, div.error');
 
 	// show warnings
 	$('#doaction, #doaction2').click(function () {
