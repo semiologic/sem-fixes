@@ -48,6 +48,9 @@ if ( @ini_get('pcre.backtrack_limit') <= 750000 )
 if ( @ini_get('pcre.recursion_limit') <= 250000 )
 	@ini_set('pcre.recursion_limit', 250000);
 
+# fix calendar
+wp_timezone_override_offset();
+
 class sem_fixes {
 	/**
 	 * fix_more()
