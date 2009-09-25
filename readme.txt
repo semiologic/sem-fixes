@@ -1,0 +1,37 @@
+=== Semiologic Fixes ===
+Contributors: Denis-de-Bernardy
+Donate link: http://www.semiologic.com/partners/
+Tags: semiologic
+Requires at least: 2.8
+Tested up to: 2.8.4
+Stable tag: trunk
+
+Fixes a variety of WP and WP plugin bugs.
+
+
+== Description ==
+
+The Semiologic Fixes plugin was born at a time where it was borderline impossible to get any kind of patch committed to the WP code base. Conveniently, the WP API allows to work around all sorts of workflow issues and outright bugs through the use of plugin hooks.
+
+When WP is broken and I feel there is little or no chances this will get fixed in WP itself, I generally maintain a fix in the Semiologic Fixes plugin. The same for a handful of non-forked WP plugins that are in Semiologic Pro. (A fork is when you opt to decide to maintain the code yourself.)
+
+The exact bugs vary from a WP version to the next. Suffice it to say that you want this one to be active at all times.
+
+= Help Me! =
+
+The [Semiologic forum](http://forum.semiologic.com) is the best place to report issues.
+
+Alternatively, email sales at semiologic dot com.
+
+
+== Installation ==
+
+1. Upload the plugin folder to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+
+
+== Change Log ==
+
+= 1.9 =
+
+- Updated for WP 2.8 / Sem Pro 6.0
