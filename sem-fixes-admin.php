@@ -25,6 +25,54 @@ class sem_fixes_admin {
 	
 	
 	/**
+	 * fix_tinymce_paste()
+	 *
+	 * @param string $content
+	 * @return string $content
+	 **/
+
+	function fix_tinymce_paste($content) {
+		if ( strpos($content, '_mcePaste') === false )
+			return $content;
+		
+		$content = stripslashes($content);
+		
+		do {
+			$old_content = $content;
+			$content = preg_replace_callback("~(<div id=\"_mcePaste\".*?>)(.*?)(</div>)~is", array('sem_fixes_admin', 'fix_tinymce_paste_callback'), $old_content);
+		} while ( $content && $content != $old_content );
+		
+		global $wpdb;
+		$content = $wpdb->escape($content);
+		
+		return $content;
+	} # fix_tinymce_paste()
+	
+	
+	/**
+	 * fix_tinymce_paste_callback()
+	 *
+	 * @param array $match
+	 * @return string $output
+	 **/
+	
+	function fix_tinymce_paste_callback($match) {
+		$content = $match[2];
+		
+		if ( !$content || stripos($content, '<div') === false )
+			return '';
+		
+		$content .= $match[3];
+		do {
+			$old_content = $content;
+			$content = preg_replace("~<div.*?>.*?</div>~is", '', $old_content);
+		} while ( $content && $content != $old_content );
+		
+		return $match[1] . $content;
+	} # fix_tinymce_paste_callback()
+	
+	
+	/**
 	 * get_comment_9935()
 	 * 
 	 * @see http://core.trac.wordpress.org/ticket/9935
@@ -314,6 +362,9 @@ add_filter('excerpt_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_term_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_user_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_link_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
+
+# http://core.trac.wordpress.org/ticket/10851
+add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_paste'), 0);
 
 # http://core.trac.wordpress.org/ticket/9843
 if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
