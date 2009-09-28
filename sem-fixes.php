@@ -48,7 +48,9 @@ if ( @ini_get('pcre.backtrack_limit') <= 750000 )
 if ( @ini_get('pcre.recursion_limit') <= 250000 )
 	@ini_set('pcre.recursion_limit', 250000);
 
-# fix calendar
+# fix calendar, see http://core.trac.wordpress.org/ticket/9588
+if ( function_exists('date_default_timezone_set') )
+	date_default_timezone_set('UTC');
 wp_timezone_override_offset();
 
 class sem_fixes {
