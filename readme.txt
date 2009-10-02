@@ -32,6 +32,10 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 1.9.1 =
+
+Fix a race condition with the Semiologic theme
+
 = 1.9 =
 
 - Updated for WP 2.8 / Sem Pro 6.0

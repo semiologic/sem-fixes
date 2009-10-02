@@ -391,7 +391,7 @@ add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_paste'), 0)
 
 # http://core.trac.wordpress.org/ticket/9843
 if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
-	add_action('save_post', array('sem_fixes_admin', 'save_post_revision'));
+	add_action('save_post', array('sem_fixes_admin', 'save_post_revision'), 1000000);
 
 # http://core.trac.wordpress.org/ticket/9876
 add_action('admin_menu', array('sem_fixes_admin', 'sort_admin_menu'), 1000000);
