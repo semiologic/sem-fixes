@@ -32,9 +32,13 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 1.9.2 =
+
+- Fix typo / HTML validation
+
 = 1.9.1 =
 
-Fix a race condition with the Semiologic theme
+- Fix a race condition with the Semiologic theme
 
 = 1.9 =
 
