@@ -376,8 +376,13 @@ EOS;
 	} # admin_print_styles()
 } # sem_fixes_admin
 
-# http://core.trac.wordpress.org/ticket/9935
-add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
+if ( !function_exists('add_theme_support') ) { // WP 2.9
+	# http://core.trac.wordpress.org/ticket/9935
+	add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
+	
+	# http://core.trac.wordpress.org/ticket/10851
+	add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_paste'), 0);
+} 
 
 # http://core.trac.wordpress.org/ticket/4298
 add_filter('content_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
@@ -385,9 +390,6 @@ add_filter('excerpt_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_term_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_user_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
 add_filter('pre_link_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
-
-# http://core.trac.wordpress.org/ticket/10851
-add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_paste'), 0);
 
 # http://core.trac.wordpress.org/ticket/9843
 if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
