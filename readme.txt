@@ -32,6 +32,10 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 1.9.3 =
+
+- Merge external libs into the plugin
+
 = 1.9.2 =
 
 - Fix typo / HTML validation

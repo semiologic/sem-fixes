@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 1.9.2
+Version: 1.9.3
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -19,14 +19,14 @@ This software is copyright Mesoconcepts and is distributed under the terms of th
 http://www.mesoconcepts.com/license/
 **/
 
-if ( file_exists(WP_PLUGIN_DIR . '/order-categories/category-order.php') )
-	include_once WP_PLUGIN_DIR . '/order-categories/category-order.php';
+if ( !function_exists('wpguy_category_order_menu') )
+	include_once dirname(__FILE__) . '/inc/category-order.php';
 
-if ( is_admin() && file_exists(WP_PLUGIN_DIR . '/mypageorder/mypageorder.php') )
-	include_once WP_PLUGIN_DIR . '/mypageorder/mypageorder.php';
+if ( is_admin() && !function_exists('mypageorder_menu') )
+	include_once dirname(__FILE__) . '/inc/mypageorder.php';
 
-if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2') ) && file_exists(WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php') )
-	include_once WP_PLUGIN_DIR . '/libxml2-fix/libxml2-fix.php';
+if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2', '2.7.3') ) && !function_exists('jms_libxml2_fix') )
+	include_once dirname(__FILE__) . '/inc/libxml2-fix.php';
 
 
 load_plugin_textdomain('sem-fixes', false, dirname(plugin_basename(__FILE__)) . '/lang');
