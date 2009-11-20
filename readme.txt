@@ -32,6 +32,10 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 1.9.4 =
+
+- Trim the junk added in TinyMCE by the buggy Skype plugin for FF
+
 = 1.9.3 =
 
 - Merge external libs into the plugin

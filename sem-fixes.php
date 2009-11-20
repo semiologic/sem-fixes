@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 1.9.3
+Version: 1.9.4 beta
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes

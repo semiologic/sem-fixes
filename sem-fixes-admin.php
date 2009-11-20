@@ -25,13 +25,13 @@ class sem_fixes_admin {
 	
 	
 	/**
-	 * fix_tinymce_paste()
+	 * fix_tinymce_junk()
 	 *
 	 * @param string $content
 	 * @return string $content
 	 **/
 
-	function fix_tinymce_paste($content) {
+	function fix_tinymce_junk($content) {
 		if ( strpos($content, '_mcePaste') === false )
 			return $content;
 		
@@ -42,11 +42,14 @@ class sem_fixes_admin {
 			$content = preg_replace_callback("~(<div id=\"_mcePaste\".*?>)(.*?)(</div>)~is", array('sem_fixes_admin', 'fix_tinymce_paste_callback'), $old_content);
 		} while ( $content && $content != $old_content );
 		
+		# http://digitizor.com/2009/08/26/how-to-fix-the-gwproxy-jsproxy/
+		$content = preg_replace(array('~<input id="gwProxy" type="hidden" />~', '~<input id="jsProxy" onclick="jsCall();" type="hidden" />~'), '', $content);
+		
 		global $wpdb;
 		$content = $wpdb->escape($content);
 		
 		return $content;
-	} # fix_tinymce_paste()
+	} # fix_tinymce_junk()
 	
 	
 	/**
@@ -379,10 +382,10 @@ EOS;
 if ( !function_exists('add_theme_support') ) { // WP 2.9
 	# http://core.trac.wordpress.org/ticket/9935
 	add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
-	
-	# http://core.trac.wordpress.org/ticket/10851
-	add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_paste'), 0);
-} 
+}
+
+# http://core.trac.wordpress.org/ticket/10851
+add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_junk'), 0);
 
 # http://core.trac.wordpress.org/ticket/4298
 add_filter('content_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
