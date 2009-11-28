@@ -36,6 +36,7 @@ Alternatively, email sales at semiologic dot com.
 
 - Trim the junk added in TinyMCE by the buggy Skype plugin for FF
 - WP 2.9 compat
+- Play well with php code in posts
 
 = 1.9.3 =
 

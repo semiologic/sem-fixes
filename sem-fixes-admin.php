@@ -16,8 +16,8 @@ class sem_fixes_admin {
 	function fix_wpautop($content) {
 		$content = str_replace(array("\r\n", "\r"), "\n", $content);
 		
-		while ( preg_match("/<[^<>]*\n/", $content) ) {
-			$content = preg_replace("/(<[^<>]*)\n+/", "$1", $content);
+		while ( preg_match("/<[^?<>]*\n/", $content) ) {
+			$content = preg_replace("/(<[^?<>]*)\n+/", "$1", $content);
 		}
 		
 		return $content;
