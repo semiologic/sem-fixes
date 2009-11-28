@@ -16,12 +16,40 @@ class sem_fixes_admin {
 	function fix_wpautop($content) {
 		$content = str_replace(array("\r\n", "\r"), "\n", $content);
 		
-		while ( preg_match("/<[^?<>]*\n/", $content) ) {
-			$content = preg_replace("/(<[^?<>]*)\n+/", "$1", $content);
+		if ( !preg_match("/<[a-z][^<>]*\n/i", $content) )
+			return $content;
+		
+		global $sem_fixes_escape;
+		$sem_fixes_escape = array();
+		
+		$content = preg_replace_callback("/<\?php.+\?>/is", array('sem_fixes_admin', 'escape_php_callback'), $content);
+		
+		while ( preg_match("/<[a-z][^<>]*\n/i", $content) ) {
+			$content = preg_replace("/(<[a-z][^<>]*)\n+/i", "$1", $content);
 		}
+		
+		if ( $sem_fixes_escape )
+			$content = str_replace(array_keys($sem_fixes_escape), array_values($sem_fixes_escape), $content);
 		
 		return $content;
 	} # fix_wpautop()
+	
+	
+	/**
+	 * escape_php_callback()
+	 *
+	 * @param array $match
+	 * @return string $out
+	 **/
+
+	function escape_php_callback($match) {
+		global $sem_fixes_escape;
+		
+		$tag_id = "----sem_fixes_escape:" . md5($match[0]) . "----";
+		$sem_fixes_escape[$tag_id] = $match[0];
+		
+		return $tag_id;
+	} # escape_php_callback()
 	
 	
 	/**
