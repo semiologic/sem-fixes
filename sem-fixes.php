@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 1.9.4
+Version: 1.9.5 alpha
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -373,4 +373,27 @@ add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 
 # fix plugins
 add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'));
+
+# http://core.trac.wordpress.org/ticket/6779 // fixed WP 2.9
+if ( !function_exists('add_theme_support') && !function_exists('wp_redirect') ) :
+function wp_redirect($location, $status = 302) {
+	global $is_IIS;
+
+	$location = apply_filters('wp_redirect', $location, $status);
+	$status = apply_filters('wp_redirect_status', $status, $location);
+
+	if ( !$location ) // allows the wp_redirect filter to cancel a redirect
+		return false;
+
+	$location = wp_sanitize_redirect($location);
+
+	if ( $is_IIS ) {
+		header("Refresh: 0;url=$location");
+	} else {
+		if ( php_sapi_name() != 'cgi-fcgi' )
+			status_header($status); // This causes problems on IIS and some FastCGI setups
+		header("Location: $location", true, $status);
+	}
+}
+endif;
 ?>

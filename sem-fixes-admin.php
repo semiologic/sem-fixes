@@ -376,11 +376,13 @@ class sem_fixes_admin {
 	 **/
 
 	function admin_print_scripts() {
-		$folder = plugin_dir_url(__FILE__);
-		wp_deregister_script('common');
-		wp_deregister_script('admin-widgets');
-		wp_register_script('common', $folder . 'js/common.js', array('jquery', 'hoverIntent', 'utils'), '20090815', true);
-		wp_register_script('admin-widgets', $folder . 'js/widgets.js', array('jquery-ui-sortable', 'jquery-ui-draggable', 'jquery-ui-droppable'), '20090815', true);
+		if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
+			$folder = plugin_dir_url(__FILE__);
+			wp_deregister_script('common');
+			wp_deregister_script('admin-widgets');
+			wp_register_script('common', $folder . 'js/common.js', array('jquery', 'hoverIntent', 'utils'), '20090815', true);
+			wp_register_script('admin-widgets', $folder . 'js/widgets.js', array('jquery-ui-sortable', 'jquery-ui-draggable', 'jquery-ui-droppable'), '20090815', true);
+		}
 	} # admin_print_scripts()
 	
 	
@@ -405,9 +407,23 @@ class sem_fixes_admin {
 
 EOS;
 	} # admin_print_styles()
+	
+	
+	/**
+	 * fix_password_nag()
+	 *
+	 * @return void
+	 **/
+
+	function fix_password_nag() {
+		global $user_ID;
+		$pref = get_usermeta($user_ID, 'default_password_nag');
+		if ( !$pref && $pref !== array() )
+			update_usermeta($user_ID, 'default_password_nag', array());
+	} # fix_password_nag()
 } # sem_fixes_admin
 
-if ( !function_exists('add_theme_support') ) { // WP 2.9
+if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
 	# http://core.trac.wordpress.org/ticket/9935
 	add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
 }
@@ -440,4 +456,7 @@ add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000)
 # scripts and styles
 add_action('admin_print_scripts', array('sem_fixes_admin', 'admin_print_scripts'));
 add_action('admin_print_styles', array('sem_fixes_admin', 'admin_print_styles'));
+
+# http://core.trac.wordpress.org/ticket/11380
+add_action('admin_notices', array('sem_fixes_admin', 'fix_password_nag'), 0);
 ?>

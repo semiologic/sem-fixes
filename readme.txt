@@ -32,6 +32,10 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 1.9.5 =
+
+- Add a couple of WP 2.9-related fixes
+
 = 1.9.4 =
 
 - Trim the junk added in TinyMCE by the buggy Skype plugin for FF
