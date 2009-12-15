@@ -22,7 +22,7 @@ class sem_fixes_admin {
 		global $sem_fixes_escape;
 		$sem_fixes_escape = array();
 		
-		$content = preg_replace_callback("/<\?php.+\?>/is", array('sem_fixes_admin', 'escape_php_callback'), $content);
+		$content = preg_replace_callback("/<\?php.+?\?>/is", array('sem_fixes_admin', 'escape_php_callback'), $content);
 		
 		while ( preg_match("/<[a-z][^<>]*\n/i", $content) ) {
 			$content = preg_replace("/(<[a-z][^<>]*)\n+/i", "$1", $content);
