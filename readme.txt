@@ -35,6 +35,7 @@ Alternatively, email sales at semiologic dot com.
 = 1.9.5 =
 
 - Add a couple of WP 2.9-related fixes
+- More lib XML2 fixes
 
 = 1.9.4 =
 

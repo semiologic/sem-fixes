@@ -11,7 +11,8 @@ function jms_libxml2_fix( $methods ) {
 
 	// See http://core.trac.wordpress.org/ticket/7771
 	if ( 
-		LIBXML_DOTTED_VERSION == '2.7.0' 
+		LIBXML_DOTTED_VERSION == '2.6.27'
+		|| LIBXML_DOTTED_VERSION == '2.7.0' 
 		|| LIBXML_DOTTED_VERSION == '2.7.1' 
 		|| LIBXML_DOTTED_VERSION == '2.7.2' 
 		|| (
