@@ -337,6 +337,34 @@ addLoadEvent(function(){
 
 EOS;
 	} # hc_addhead()
+	
+	
+	/**
+	 * rewrite_rules()
+	 *
+	 * @param string $rules
+	 * @return string $rules
+	 **/
+
+	function rewrite_rules($rules) {
+		$extra = <<<EOS
+
+RewriteCond %{QUERY_STRING} =https?:// [NC]
+RewriteRule ^ - [F,L]
+
+RewriteRule \.(gif|png|jpe?g|css|js|ico)$ - [L]
+
+EOS;
+		
+		# this will simply fail if mod_rewrite isn't available
+		if ( preg_match("/RewriteBase.+\n*/i", $rules, $rewrite_base) ) {
+			$rewrite_base = end($rewrite_base);
+			$new_rewrite_base = trim($rewrite_base) . "\n\n" . trim($extra) . "\n\n";
+			$rules = str_replace($rewrite_base, $new_rewrite_base, $rules);
+		}
+		
+		return $rules;
+	} # rewrite_rules()
 } # sem_fixes
 
 
@@ -373,6 +401,9 @@ add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 
 # fix plugins
 add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'));
+
+# http://core.trac.wordpress.org/ticket/3426
+add_filter('mod_rewrite_rules', array('sem_fixes', 'rewrite_rules'));
 
 # http://core.trac.wordpress.org/ticket/6779 // fixed WP 2.9
 if ( !function_exists('add_theme_support') && !function_exists('wp_redirect') ) :
