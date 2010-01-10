@@ -35,6 +35,7 @@ Alternatively, email sales at semiologic dot com.
 = 1.9.6 =
 
 - Improve rewrite rule handler
+- Add activate/deactivate handlers
 
 = 1.9.5 =
 

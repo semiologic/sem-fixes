@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 1.9.6 beta
+Version: 1.9.6 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -18,15 +18,6 @@ This software is copyright Mesoconcepts and is distributed under the terms of th
 
 http://www.mesoconcepts.com/license/
 **/
-
-if ( !function_exists('wpguy_category_order_menu') )
-	include_once dirname(__FILE__) . '/inc/category-order.php';
-
-if ( is_admin() && !function_exists('mypageorder_menu') )
-	include_once dirname(__FILE__) . '/inc/mypageorder.php';
-
-if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2', '2.7.3') ) && !function_exists('jms_libxml2_fix') )
-	include_once dirname(__FILE__) . '/inc/libxml2-fix.php';
 
 
 load_plugin_textdomain('sem-fixes', false, dirname(plugin_basename(__FILE__)) . '/lang');
@@ -362,12 +353,69 @@ EOS;
 		
 		return $rules;
 	} # rewrite_rules()
-} # sem_fixes
+	
+	
+	/**
+	 * activate()
+	 *
+	 * @return void
+	 **/
 
+	function activate() {
+		if ( !function_exists('save_mod_rewrite_rules') || !function_exists('get_home_path') )
+			include_once ABSPATH . 'wp-admin/includes/admin.php';
+		
+		if ( !isset($GLOBALS['wp_rewrite']) ) $GLOBALS['wp_rewrite'] = new WP_Rewrite;
+		
+		global $wp_rewrite;
+		$wp_rewrite->flush_rules();
+	} # activate()
+	
+	
+	/**
+	 * deactivate()
+	 *
+	 * @return void
+	 **/
+
+	function deactivate() {
+		if ( !function_exists('save_mod_rewrite_rules') || !function_exists('get_home_path') )
+			include_once ABSPATH . 'wp-admin/includes/admin.php';
+		
+		if ( !isset($GLOBALS['wp_rewrite']) ) $GLOBALS['wp_rewrite'] = new WP_Rewrite;
+		
+		remove_filter('mod_rewrite_rules', array('sem_fixes', 'rewrite_rules'));
+		
+		global $wp_rewrite;
+		$wp_rewrite->flush_rules();
+	} # deactivate()
+	
+	
+	/**
+	 * plugins_loaded()
+	 *
+	 * @return void
+	 **/
+
+	function plugins_loaded() {
+		if ( !function_exists('wpguy_category_order_menu') )
+			include_once dirname(__FILE__) . '/inc/category-order.php';
+
+		if ( is_admin() && !function_exists('mypageorder_menu') )
+			include_once dirname(__FILE__) . '/inc/mypageorder.php';
+
+		if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2', '2.7.3') ) && !function_exists('jms_libxml2_fix') )
+			include_once dirname(__FILE__) . '/inc/libxml2-fix.php';
+	} # plugins_loaded()
+} # sem_fixes
 
 if ( is_admin() )
 	include dirname(__FILE__) . '/sem-fixes-admin.php';
 
+register_activation_hook(__FILE__, array('sem_fixes', 'activate'));
+register_deactivation_hook(__FILE__, array('sem_fixes', 'deactivate'));
+
+add_action('plugins_loaded', array('sem_fixes', 'plugins_loaded'));
 
 if ( !is_admin() ) {
 	# add uninitialized akismet option
