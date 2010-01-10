@@ -32,6 +32,10 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 1.9.6 =
+
+- Improve rewrite rule handler
+
 = 1.9.5 =
 
 - Add a couple of WP 2.9-related fixes
