@@ -144,9 +144,9 @@ class sem_fixes {
 		}
 		
 		if ( !defined('WP_HOME') )
-			define('WP_HOME', get_option('home'));
+			define('WP_HOME', $home_url);
 		if ( !defined('WP_SITEURL') )
-			define('WP_SITEURL', get_option('siteurl'));
+			define('WP_SITEURL', $site_url);
 	} # readonly_url()
 	
 	
