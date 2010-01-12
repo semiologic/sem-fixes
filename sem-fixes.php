@@ -123,12 +123,12 @@ class sem_fixes {
 	
 	
 	/**
-	 * fix_www_pref()
+	 * readonly_url()
 	 *
 	 * @return void
 	 **/
 
-	function fix_www_pref() {
+	function readonly_url() {
 		$home_url = get_option('home');
 		$site_url = get_option('siteurl');
 		
@@ -140,9 +140,14 @@ class sem_fixes {
 				$site_url = str_replace('://', '://www.', $site_url);
 			else
 				$site_url = str_replace('://www.', '://', $site_url);
-			update_option('site_url', $site_url);
+			update_option('siteurl', $site_url);
 		}
-	} # fix_www_pref()
+		
+		if ( !defined('WP_HOME') )
+			define('WP_HOME', get_option('home'));
+		if ( !defined('WP_SITEURL') )
+			define('WP_SITEURL', get_option('siteurl'));
+	} # readonly_url()
 	
 	
 	/**
@@ -435,7 +440,7 @@ if ( !is_admin() ) {
 }
 
 # http://core.trac.wordpress.org/ticket/9873
-add_action('login_head', array('sem_fixes', 'fix_www_pref'));
+sem_fixes::readonly_url();
 
 # http://core.trac.wordpress.org/ticket/6698
 if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
