@@ -345,7 +345,7 @@ EOS;
 	function rewrite_rules($rules) {
 		$extra = <<<EOS
 
-RewriteRule \.(gif|png|jpe?g|ico)$ - [L]
+RewriteRule \.(gif|png|jpe?g|ico)$ - [NC,L]
 
 EOS;
 		
@@ -367,6 +367,7 @@ EOS;
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+
 RewriteRule . /
 EOS;
 			$rules = str_replace($from, $to, $rules);
