@@ -34,7 +34,7 @@ Alternatively, email sales at semiologic dot com.
 
 = 1.9.6 =
 
-- Improve rewrite rule handler
+- Further rewrite rule optimizations
 - Add activate/deactivate handlers
 - Prevent users from breaking their sites by editing the WP url
 

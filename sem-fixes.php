@@ -354,6 +354,22 @@ EOS;
 			$rewrite_base = end($rewrite_base);
 			$new_rewrite_base = trim($rewrite_base) . "\n\n" . trim($extra) . "\n\n";
 			$rules = str_replace($rewrite_base, $new_rewrite_base, $rules);
+			
+			# optimize the mess: http://core.trac.wordpress.org/ticket/11884
+			$from = <<<EOS
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /
+EOS;
+			$to = <<<EOS
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule . /
+EOS;
+			$rules = str_replace($from, $to, $rules);
 		}
 		
 		return $rules;
