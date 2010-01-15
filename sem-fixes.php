@@ -494,4 +494,8 @@ function wp_redirect($location, $status = 302) {
 	}
 }
 endif;
+
+# http://core.trac.wordpress.org/ticket/9105
+if ( !get_option('show_on_front') )
+	update_option('show_on_front', 'posts');
 ?>
