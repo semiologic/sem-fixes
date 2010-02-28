@@ -63,8 +63,7 @@ class sem_fixes_admin {
 		if ( strpos($content, '_mcePaste') === false )
 			return $content;
 		
-		$content = stripslashes($content);
-		
+		# mental note: $content is escaped
 		do {
 			$old_content = $content;
 			$content = preg_replace_callback("~(<div id=\"_mcePaste\".*?>)(.*?)(</div>)~is", array('sem_fixes_admin', 'fix_tinymce_paste_callback'), $old_content);
@@ -72,9 +71,6 @@ class sem_fixes_admin {
 		
 		# http://digitizor.com/2009/08/26/how-to-fix-the-gwproxy-jsproxy/
 		$content = preg_replace(array('~<input id="gwProxy" type="hidden" />~', '~<input id="jsProxy" onclick="jsCall();" type="hidden" />~'), '', $content);
-		
-		global $wpdb;
-		$content = $wpdb->escape($content);
 		
 		return $content;
 	} # fix_tinymce_junk()
@@ -149,7 +145,7 @@ class sem_fixes_admin {
 			WHERE	post_type = 'revision'
 			AND		ID <> " . intval($rev_id) . "
 			AND		post_parent = " . intval($post_id) . "
-			AND		post_content = '" . $wpdb->escape($post->post_content) . "'
+			AND		post_content = '" . $wpdb->_real_escape($post->post_content) . "'
 			");
 		
 		foreach ( $kill_ids as $kill_id )
