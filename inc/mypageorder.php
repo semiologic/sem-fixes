@@ -12,7 +12,7 @@ function mypageorder_menu()
 }
 
 function mypageorder_js_libs() {
-	if ( $_GET['page'] == "mypageorder" ) {
+	if ( !empty($_GET['page']) && $_GET['page'] == "mypageorder" ) {
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script('jquery-ui-sortable');
