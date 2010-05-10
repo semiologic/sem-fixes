@@ -57,10 +57,10 @@ if($mode == "act_OrderPages")
 }
 
 	$subPageStr = "";
-	$results=$wpdb->get_results("SELECT * FROM $wpdb->posts WHERE post_parent = $parentID and post_type = 'page' AND post_status <> 'trash' ORDER BY menu_order ASC");
+	$results=$wpdb->get_results("SELECT * FROM $wpdb->posts WHERE post_parent = $parentID and post_type = 'page' AND post_status IN ( 'publish', 'private' ) ORDER BY menu_order ASC");
 	foreach($results as $row)
 	{
-		$postCount=$wpdb->get_row("SELECT count(*) as postsCount FROM $wpdb->posts WHERE post_parent = $row->ID and post_type = 'page' AND post_status <> 'trash'", ARRAY_N);
+		$postCount=$wpdb->get_row("SELECT count(*) as postsCount FROM $wpdb->posts WHERE post_parent = $row->ID and post_type = 'page' AND post_status IN ( 'publish', 'private' )", ARRAY_N);
 		if($postCount[0] > 0)
 	    	$subPageStr = $subPageStr."<option value='$row->ID'>$row->post_title</option>";
 	}
