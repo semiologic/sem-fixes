@@ -35,6 +35,7 @@ Alternatively, email sales at semiologic dot com.
 = 2.0 =
 
 - WP 3.0 compat
+- Don't break CDATA tags when fixing wpautop
 
 = 1.9.6 =
 
