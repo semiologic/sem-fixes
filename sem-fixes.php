@@ -498,4 +498,8 @@ endif;
 # http://core.trac.wordpress.org/ticket/9105
 if ( !get_option('show_on_front') )
 	update_option('show_on_front', 'posts');
+
+# http://core.trac.wordpress.org/changeset/14996
+foreach ( array('the_content', 'the_title', 'comment_text') as $hook )
+	remove_filter($hook, 'capital_P_dangit');
 ?>
