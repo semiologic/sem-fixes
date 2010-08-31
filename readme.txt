@@ -32,6 +32,10 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 2.0.1 =
+
+- WP 3.0.1 compat
+
 = 2.0 =
 
 - WP 3.0 compat

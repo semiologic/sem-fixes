@@ -22,10 +22,32 @@ function mypageorder_js_libs() {
 //Switch page target depending on version
 function mypageorder_getTarget() {
 	global $wp_version;
-	if (version_compare($wp_version, '2.6.5', '>'))
-		return "page-new.php";
-	else
-		return "edit.php";
+	switch (true) {
+		case version_compare($wp_version, '3.0.0', '>='):
+			return 'page-new.php';
+		case version_compare($wp_version, '2.9.0', '>='):
+			return 'edit-pages.php';
+		case version_compare($wp_version, '2.6.5', '>'):
+			return 'page-new.php';
+		default:
+			return 'edit.php';
+	}
+}
+
+/**
+ * get link base to the current page
+ * 
+ * @return string base-link, so to add additional query parameters at the end.
+ */
+function mypageorder_getLinkBase() {
+	global $pagenow;
+	global $typenow;
+	
+	$link = $pagenow . '?';
+	if (isset($typenow))
+		$link .= 'post_type=' . $typenow . '&';
+		
+	return $link;
 }
 
 add_action('admin_menu', 'mypageorder_menu');
@@ -35,7 +57,8 @@ function mypageorder()
 {
 global $wpdb;
 $mode = "";
-$mode = $_GET['mode'];
+if (isset($_GET['mode']))
+	$mode = $_GET['mode'];
 $parentID = 0;
 if (isset($_GET['parentID']))
 	$parentID = (int) $_GET['parentID'];
@@ -123,12 +146,12 @@ if($mode == "act_OrderPages")
 		jQuery("#updateText").html("<?php _e('Updating Page Order...', 'sem-fixes') ?>");
 
 		idList = jQuery("#order").sortable("toArray");
-		location.href = '<?php echo mypageorder_getTarget(); ?>?page=mypageorder&mode=act_OrderPages&parentID=<?php echo $parentID; ?>&idString='+idList;
+		location.href = '<?php echo mypageorder_getLinkBase(); ?>page=mypageorder&mode=act_OrderPages&parentID=<?php echo $parentID; ?>&idString='+idList;
 	}
 
 	function goEdit () {
 		if(jQuery("#pages").val() != "")
-			location.href="<?php echo mypageorder_getTarget(); ?>?page=mypageorder&mode=dsp_OrderPages&parentID="+jQuery("#pages").val();
+			location.href="<?php echo mypageorder_getLinkBase(); ?>page=mypageorder&mode=dsp_OrderPages&parentID="+jQuery("#pages").val();
 	}
 </script>
 <?php
