@@ -32,6 +32,11 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 2.0.2 =
+
+- Fix curl w/ ssl
+- P in WP Dangit fixes
+
 = 2.0.1 =
 
 - WP 3.0.1 compat

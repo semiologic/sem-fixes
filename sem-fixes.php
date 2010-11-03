@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.0.1
+Version: 2.0.2 alpha
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -378,6 +378,19 @@ EOS;
 	
 	
 	/**
+	 * Disable SSL validation for Curl
+	 *
+	 * @param resource $ch
+	 * @return resource $ch
+	 **/
+	function curl_ssl($ch)
+	{
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		return $ch;
+	}
+	
+	
+	/**
 	 * activate()
 	 *
 	 * @return void
@@ -500,6 +513,12 @@ if ( !get_option('show_on_front') )
 	update_option('show_on_front', 'posts');
 
 # http://core.trac.wordpress.org/changeset/14996
-foreach ( array('the_content', 'the_title', 'comment_text') as $hook )
+foreach ( array('the_content', 'the_title', 'comment_text') as $hook ) {
 	remove_filter($hook, 'capital_P_dangit');
+	remove_filter($hook, 'capital_P_dangit', 11);
+	remove_filter($hook, 'capital_P_dangit', 31);
+}
+
+# Fix curl SSL
+add_filter('http_api_curl', array('sem_fixes', 'curl_ssl'));
 ?>
