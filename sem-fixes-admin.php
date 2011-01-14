@@ -329,7 +329,7 @@ class sem_fixes_admin {
 	function editor_buttons_2($buttons) {
 		return array(
 			'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', 'backcolor', '|',
-			'media', 'emotions', 'charmap',
+			'emotions', 'charmap',
 			);
 	} # editor_buttons_2()
 	
