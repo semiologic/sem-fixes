@@ -32,6 +32,10 @@ Alternatively, email sales at semiologic dot com.
 
 == Change Log ==
 
+= 2.0.4 =
+
+- Improve disabling curl ssl verification.
+
 = 2.0.3 =
 
 - Drop TinyMCE media button (removed in WP 3.1)
