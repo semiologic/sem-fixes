@@ -7,7 +7,7 @@ Author Email: froman118@gmail.com
 
 function mypageorder_menu()
 {   if (function_exists('add_submenu_page')) {
-        add_submenu_page(mypageorder_getTarget(), 'My Page Order', __('My Page Order', 'sem-fixes'), 5,"mypageorder",'mypageorder');
+        add_submenu_page(mypageorder_getTarget(), 'My Page Order', __('My Page Order', 'sem-fixes'), 'edit_pages',"mypageorder",'mypageorder');
     }
 }
 
