@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 2.8
-Tested up to: 3.1
+Tested up to: 3.2.1
 Stable tag: trunk
 
 Fixes a variety of WP and WP plugin bugs.
@@ -20,8 +20,6 @@ The exact bugs vary from a WP version to the next. Suffice it to say that you wa
 = Help Me! =
 
 The [Semiologic forum](http://forum.semiologic.com) is the best place to report issues.
-
-Alternatively, email sales at semiologic dot com.
 
 
 == Installation ==
