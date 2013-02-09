@@ -251,15 +251,15 @@ class sem_fixes_admin {
 			$submenu[$id] = $data;
 		}
 	} # sort_admin_menu()
-	
-	
-	/**
-	 * strnatcasecmp_submenu()
-	 *
-	 * @param submenu item $a
-	 * @param submenu item $b
-	 * @return -1|0|1
-	 **/
+
+
+    /**
+     * strnatcasecmp_submenu()
+     *
+     * @param submenu item $a
+     * @param submenu item $b
+     * @return int -1|0|1
+     */
 	
 	function strnatcasecmp_submenu($a, $b) {
 		return strnatcasecmp($a[0], $b[0]);
@@ -291,7 +291,7 @@ class sem_fixes_admin {
 		if ( get_user_option('rich_editing') == 'true') {
 			$folder = plugin_dir_url(__FILE__);
 			
-			foreach ( array('advlink', 'emotions', 'searchreplace', 'table') as $plugin ) {
+			foreach ( array('advlink', 'advlist', 'nonbreaking', 'emotions', 'searchreplace', 'table', ) as $plugin ) {
 				$file = $folder . 'tinymce/' . $plugin . '/editor_plugin.js';
 				$plugin_array[$plugin] = $file;
 			}
@@ -311,7 +311,7 @@ class sem_fixes_admin {
 	function editor_buttons($buttons) {
 		return array(
 			'bold', 'italic', 'underline', 'strikethrough', '|',
-			'bullist', 'numlist', 'blockquote', '|',
+            'sup', 'sub', 'blockquote', '|',
 			'outdent', 'indent', '|',
 			'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
 			'link', 'unlink', 'anchor',
@@ -329,7 +329,7 @@ class sem_fixes_admin {
 	function editor_buttons_2($buttons) {
 		return array(
 			'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', 'backcolor', '|',
-			'emotions', 'charmap',
+			'emotions', 'charmap', 'nonbreaking',
 			);
 	} # editor_buttons_2()
 	
@@ -344,9 +344,9 @@ class sem_fixes_admin {
 	function editor_buttons_3($buttons) {
 		return array(
 			'tablecontrols', '|',
-			'wp_more', 'wp_page', '|',
+			'wp_more', 'wp_page', '|', 'hr', '|',
 			'spellchecker','|',
-			'wp_help',
+            'wp_help',
 			);
 	} # editor_buttons_3()
 	
@@ -360,10 +360,11 @@ class sem_fixes_admin {
 	
 	function editor_buttons_4($buttons) {
 		return array(
-			'pastetext', 'pasteword', 'removeformat', '|',
+            'bullist', 'numlist', '|',
+            'pastetext', 'pasteword', 'removeformat', '|',
 			'search', 'replace', '|',
 			'undo', 'redo', '|',
-			'fullscreen', 
+            'code', '|', 'fullscreen',
 			);
 	} # editor_buttons_4()
 	
@@ -416,9 +417,9 @@ EOS;
 
 	function fix_password_nag() {
 		global $user_ID;
-		$pref = get_usermeta($user_ID, 'default_password_nag');
+		$pref = get_user_meta($user_ID, 'default_password_nag', true);
 		if ( !$pref && $pref !== array() )
-			update_usermeta($user_ID, 'default_password_nag', array());
+			update_user_meta($user_ID, 'default_password_nag', array());
 	} # fix_password_nag()
 } # sem_fixes_admin
 
@@ -427,8 +428,8 @@ if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
 	add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
 }
 
-# http://core.trac.wordpress.org/ticket/10851
-add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_junk'), 0);
+# http://core.trac.wordpress.org/ticket/10851   // fixed in 2.8.4
+// add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_junk'), 0);
 
 # http://core.trac.wordpress.org/ticket/4298
 add_filter('content_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
@@ -456,6 +457,6 @@ add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000)
 add_action('admin_print_scripts', array('sem_fixes_admin', 'admin_print_scripts'));
 add_action('admin_print_styles', array('sem_fixes_admin', 'admin_print_styles'));
 
-# http://core.trac.wordpress.org/ticket/11380
-add_action('admin_notices', array('sem_fixes_admin', 'fix_password_nag'), 0);
+# http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
+// add_action('admin_notices', array('sem_fixes_admin', 'fix_password_nag'), 0);
 ?>

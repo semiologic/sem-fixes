@@ -3,8 +3,8 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.0.4
-Author: Denis de Bernardy
+Version: 2.1
+Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
 Domain Path: /lang
@@ -128,7 +128,7 @@ class sem_fixes {
 	 * @return void
 	 **/
 
-	function readonly_url() {
+	static function readonly_url() {
 		$home_url = get_option('home');
 		$site_url = get_option('siteurl');
 		
@@ -156,7 +156,7 @@ class sem_fixes {
 	 * @return void
 	 **/
 
-	function do_generic_ping() {
+	static function do_generic_ping() {
 		if ( get_transient('last_ping') )
 			return;
 		
@@ -483,8 +483,9 @@ add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
 # fix plugins
 add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'));
 
-# http://core.trac.wordpress.org/ticket/3426
-add_filter('mod_rewrite_rules', array('sem_fixes', 'rewrite_rules'));
+# http://core.trac.wordpress.org/ticket/3426  // fixed in WP 3.0
+if ( !function_exists('wp_favicon_request'))
+    add_filter('mod_rewrite_rules', array('sem_fixes', 'rewrite_rules'));
 
 # http://core.trac.wordpress.org/ticket/6779 // fixed WP 2.9
 if ( !function_exists('add_theme_support') && !function_exists('wp_redirect') ) :
