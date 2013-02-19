@@ -31,7 +31,7 @@ function wpguy_category_order_reorder($terms, $taxonomies, $args){
 	}
 	
 	// Apply to categories only and only if they're ordered by name.
-	if($taxonomies[0] == "category" && $args['orderby'] == 'name'){ // You may change this line for: `if($taxonomies[0] == "category" && $args['orderby'] == 'custom'){` if you wish to still be able to order by name.
+	if((isset($taxonomies[0]) && $taxonomies[0] == "category") && $args['orderby'] == 'name'){ // You may change this line for: `if($taxonomies[0] == "category" && $args['orderby'] == 'custom'){` if you wish to still be able to order by name.
 		add_option('wpguy_category_order', array());
 		$options = get_option("wpguy_category_order");
 	
