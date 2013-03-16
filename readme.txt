@@ -30,6 +30,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.1.2 =
+
+- Fix plugin versioning
+
 = 2.1.1 =
 
 - Fixed unknown index warning
