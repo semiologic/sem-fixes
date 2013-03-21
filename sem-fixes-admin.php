@@ -290,9 +290,14 @@ class sem_fixes_admin {
 	function editor_plugin($plugin_array) {
 		if ( get_user_option('rich_editing') == 'true') {
 			$folder = plugin_dir_url(__FILE__);
+
+            global $wp_version;
+            $tincymce_dir = 'pre-wp35/tinymce/';
+          	if ( version_compare( $wp_version, '3.5', '>=') )
+                $tincymce_dir = 'tinymce/';
 			
 			foreach ( array('advlink', 'advlist', 'nonbreaking', 'emotions', 'searchreplace', 'table', ) as $plugin ) {
-				$file = $folder . 'tinymce/' . $plugin . '/editor_plugin.js';
+				$file = $folder . $tincymce_dir . $plugin . '/editor_plugin.js';
 				$plugin_array[$plugin] = $file;
 			}
 		}

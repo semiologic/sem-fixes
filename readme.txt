@@ -2,7 +2,7 @@
 Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
-Requires at least: 2.8
+Requires at least: 3.5
 Tested up to: 3.5.1
 Stable tag: trunk
 
@@ -29,6 +29,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.1.4 =
+
+- TinyMCE popup js file backwards compatibility with pre-WP 3.5.  Broke this in the 2.1.3 release
 
 = 2.1.3 =
 
