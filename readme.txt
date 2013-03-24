@@ -30,6 +30,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.1.5 =
+
+- Yet another svn commit issue with new files
+
 = 2.1.4 =
 
 - TinyMCE popup js file backwards compatibility with pre-WP 3.5.  Broke this in the 2.1.3 release
