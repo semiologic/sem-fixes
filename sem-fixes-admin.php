@@ -6,7 +6,61 @@
  **/
 
 class sem_fixes_admin {
-	/**
+    /**
+     * sem_fixes_admin()
+     */
+    function sem_fixes_admin() {
+        global $wp_version;
+
+        if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
+        	# http://core.trac.wordpress.org/ticket/9935
+        	add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array($this, 'get_comment_9935'));"));
+        }
+
+        # http://core.trac.wordpress.org/ticket/10851   // fixed in 2.8.4
+        // add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_junk'), 0);
+
+        # http://core.trac.wordpress.org/ticket/4298
+        add_filter('content_save_pre', array($this, 'fix_wpautop'), 0);
+        add_filter('excerpt_save_pre', array($this, 'fix_wpautop'), 0);
+        add_filter('pre_term_description', array($this, 'fix_wpautop'), 0);
+        add_filter('pre_user_description', array($this, 'fix_wpautop'), 0);
+        add_filter('pre_link_description', array($this, 'fix_wpautop'), 0);
+
+
+        // this was address in 3.6 by http://core.trac.wordpress.org/changeset/23414
+        if ( version_compare( $wp_version, '3.6', '<' ) ) {
+            # http://core.trac.wordpress.org/ticket/9843
+            if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
+                add_action('save_post', array($this, 'save_post_revision'), 1000000);
+        }
+/*        else {
+            // use 3.6 filter wp_revisions_to_keep is we wish to stop revisions automatically
+            add_filter('wp_revisions_to_keep', array($this, 'turn_off_post_revisions'), 0, 2);
+        }
+*/
+
+        # http://core.trac.wordpress.org/ticket/9876
+        add_action('admin_menu', array($this, 'sort_admin_menu'), 1000000);
+
+        # tinymce
+        add_filter('tiny_mce_before_init', array($this, 'editor_options'), -1000);
+        add_filter('mce_external_plugins', array($this, 'editor_plugin'), 1000);
+        add_filter('mce_buttons', array($this, 'editor_buttons'), -1000);
+        add_filter('mce_buttons_2', array($this, 'editor_buttons_2'), -1000);
+        add_filter('mce_buttons_3', array($this, 'editor_buttons_3'), -1000);
+        add_filter('mce_buttons_4', array($this, 'editor_buttons_4'), -1000);
+
+        # scripts and styles
+        add_action('admin_print_scripts', array($this, 'admin_print_scripts'));
+        add_action('admin_print_styles', array($this, 'admin_print_styles'));
+
+        # http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
+        // add_action('admin_notices', array($this, 'fix_password_nag'), 0);
+    }
+
+
+    /**
 	 * fix_wpautop()
 	 *
 	 * @param string $content
@@ -24,7 +78,7 @@ class sem_fixes_admin {
 		
 		$content = preg_replace_callback(
 			array("/<\?php.+?\?>/is", "/<!\[CDATA\[.*?\]\]>/"),
-			array('sem_fixes_admin', 'escape_php_callback'),
+			array($this, 'escape_php_callback'),
 			$content);
 		
 		while ( preg_match("/<[a-z][^<>]*\n/i", $content) ) {
@@ -69,7 +123,7 @@ class sem_fixes_admin {
 		# mental note: $content is escaped
 		do {
 			$old_content = $content;
-			$content = preg_replace_callback("~(<div id=\"_mcePaste\".*?>)(.*?)(</div>)~is", array('sem_fixes_admin', 'fix_tinymce_paste_callback'), $old_content);
+			$content = preg_replace_callback("~(<div id=\"_mcePaste\".*?>)(.*?)(</div>)~is", array($this, 'fix_tinymce_paste_callback'), $old_content);
 		} while ( $content && $content != $old_content );
 		
 		# http://digitizor.com/2009/08/26/how-to-fix-the-gwproxy-jsproxy/
@@ -120,8 +174,21 @@ class sem_fixes_admin {
 		
 		return $comment;								
 	} # get_comment_9935()
-	
-	
+
+    /**
+   	 * turn_off_post_revisions()
+   	 *
+   	 * @param object $post
+     * @param int $num
+     *
+   	 * @return int
+   	 **/
+
+/*   	function turn_off_post_revisions($num, $post) {
+        return 0;
+    }
+*/
+
 	/**
 	 * save_post_revision()
 	 *
@@ -137,10 +204,10 @@ class sem_fixes_admin {
 		} else {
 			$post_id = $rev_id;
 		}
-		
+
 		global $wpdb;
 		$post = get_post($rev_id);
-		
+
 		# drop dup revs
 		$kill_ids = $wpdb->get_col("
 			SELECT	ID
@@ -150,14 +217,14 @@ class sem_fixes_admin {
 			AND		post_parent = " . intval($post_id) . "
 			AND		post_content = '" . $wpdb->_real_escape($post->post_content) . "'
 			");
-		
+
 		foreach ( $kill_ids as $kill_id )
 			wp_delete_post_revision($kill_id);
-		
+
 		# stop here for real posts
 		if ( $post_id == $rev_id )
 			return;
-		
+
 		# drop other potential dup revs
 		$kill_ids = $wpdb->get_col("
 			SELECT	p2.ID
@@ -173,7 +240,7 @@ class sem_fixes_admin {
 
 		foreach ( $kill_ids as $kill_id )
 			wp_delete_post_revision($kill_id);
-		
+
 		# drop near-empty revs
 		$kill_ids = $wpdb->get_col("
 			SELECT	ID
@@ -182,10 +249,10 @@ class sem_fixes_admin {
 			AND		post_parent = " . intval($post_id) . "
 			AND		LENGTH(post_content) <= 50
 			");
-		
+
 		foreach ( $kill_ids as $kill_id )
 			wp_delete_post_revision($kill_id);
-		
+
 		# drop adjascent revs
 		$kill_ids = $wpdb->get_col("
 			SELECT	p2.ID
@@ -202,7 +269,7 @@ class sem_fixes_admin {
 
 		foreach ( $kill_ids as $kill_id )
 			wp_delete_post_revision($kill_id);
-		
+
 		# drop near-identical revs
 		$kill_ids = $wpdb->get_col("
 			SELECT	p2.ID
@@ -246,7 +313,7 @@ class sem_fixes_admin {
 					break;
 				}
 			}
-			usort($to_sort, array('sem_fixes_admin', 'strnatcasecmp_submenu'));
+			usort($to_sort, array($this, 'strnatcasecmp_submenu'));
 			$data = array_merge($data, $to_sort);
 			$submenu[$id] = $data;
 		}
@@ -428,40 +495,5 @@ EOS;
 	} # fix_password_nag()
 } # sem_fixes_admin
 
-if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
-	# http://core.trac.wordpress.org/ticket/9935
-	add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array('sem_fixes_admin', 'get_comment_9935'));"));
-}
-
-# http://core.trac.wordpress.org/ticket/10851   // fixed in 2.8.4
-// add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_junk'), 0);
-
-# http://core.trac.wordpress.org/ticket/4298
-add_filter('content_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('excerpt_save_pre', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('pre_term_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('pre_user_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
-add_filter('pre_link_description', array('sem_fixes_admin', 'fix_wpautop'), 0);
-
-# http://core.trac.wordpress.org/ticket/9843
-if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
-	add_action('save_post', array('sem_fixes_admin', 'save_post_revision'), 1000000);
-
-# http://core.trac.wordpress.org/ticket/9876
-add_action('admin_menu', array('sem_fixes_admin', 'sort_admin_menu'), 1000000);
-
-# tinymce
-add_filter('tiny_mce_before_init', array('sem_fixes_admin', 'editor_options'), -1000);
-add_filter('mce_external_plugins', array('sem_fixes_admin', 'editor_plugin'), 1000);
-add_filter('mce_buttons', array('sem_fixes_admin', 'editor_buttons'), -1000);
-add_filter('mce_buttons_2', array('sem_fixes_admin', 'editor_buttons_2'), -1000);
-add_filter('mce_buttons_3', array('sem_fixes_admin', 'editor_buttons_3'), -1000);
-add_filter('mce_buttons_4', array('sem_fixes_admin', 'editor_buttons_4'), -1000);
-
-# scripts and styles
-add_action('admin_print_scripts', array('sem_fixes_admin', 'admin_print_scripts'));
-add_action('admin_print_styles', array('sem_fixes_admin', 'admin_print_styles'));
-
-# http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
-// add_action('admin_notices', array('sem_fixes_admin', 'fix_password_nag'), 0);
+$sem_fixes_admin = new sem_fixes_admin();
 ?>

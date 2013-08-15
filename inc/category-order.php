@@ -100,7 +100,7 @@ function wpguy_category_order_options(){
 	
 	
 	$options = get_option("wpguy_category_order");
-	$order = $options[$childrenOf];
+	$order = (isset($options[$childrenOf]) ? $options[$childrenOf] : '');
 	
 	
 	if(isset($_GET['submit'])){

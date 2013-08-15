@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.1.5
+Version: 2.2
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -45,7 +45,66 @@ if ( function_exists('date_default_timezone_set') )
 wp_timezone_override_offset();
 
 class sem_fixes {
-	/**
+    /**
+     * sem_fixes()
+     */
+    function sem_fixes() {
+        register_activation_hook(__FILE__, array($this, 'activate'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+        add_action('plugins_loaded', array($this, 'plugins_loaded'));
+
+        if ( !is_admin() ) {
+        	# add uninitialized akismet option
+        	add_option('akismet_connectivity_time', 0);
+
+        	# remove #more-id in more links
+        	add_filter('the_content_more_link', array($this, 'fix_more'), 10000);
+
+        	# fix wysiwyg
+        	add_option('fix_wysiwyg', '0');
+        	if ( get_option('fix_wysiwyg') )
+        		add_filter('the_content', array($this, 'fix_wysiwyg'), 10000);
+
+        	# kill generator
+        	remove_action('wp_head', 'wp_generator');
+        	add_filter('the_generator', array($this, 'the_generator'));
+        }
+
+        # http://core.trac.wordpress.org/ticket/9873
+        sem_fixes::readonly_url();
+
+        # http://core.trac.wordpress.org/ticket/6698
+        if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
+            sem_fixes::do_generic_ping();
+
+        # http://core.trac.wordpress.org/ticket/9874
+        add_filter('tiny_mce_before_init', array($this, 'tiny_mce_config'));
+
+        # fix plugins
+        add_action('plugins_loaded', array($this, 'fix_plugins'));
+
+        # http://core.trac.wordpress.org/ticket/3426  // fixed in WP 3.0
+        if ( !function_exists('wp_favicon_request'))
+            add_filter('mod_rewrite_rules', array($this, 'rewrite_rules'));
+
+        # http://core.trac.wordpress.org/ticket/9105
+        if ( !get_option('show_on_front') )
+            update_option('show_on_front', 'posts');
+
+        # http://core.trac.wordpress.org/changeset/14996
+        foreach ( array('the_content', 'the_title', 'comment_text') as $hook ) {
+            remove_filter($hook, 'capital_P_dangit');
+            remove_filter($hook, 'capital_P_dangit', 11);
+            remove_filter($hook, 'capital_P_dangit', 31);
+        }
+
+        # Fix curl SSL
+        add_filter('http_api_curl', array($this, 'curl_ssl'));
+    }
+
+
+    /**
 	 * fix_more()
 	 *
 	 * @param string $more_link
@@ -128,7 +187,7 @@ class sem_fixes {
 	 * @return void
 	 **/
 
-	static function readonly_url() {
+	function readonly_url() {
 		$home_url = get_option('home');
 		$site_url = get_option('siteurl');
 		
@@ -156,7 +215,7 @@ class sem_fixes {
 	 * @return void
 	 **/
 
-	static function do_generic_ping() {
+	function do_generic_ping() {
 		if ( get_transient('last_ping') )
 			return;
 		
@@ -229,13 +288,13 @@ class sem_fixes {
 		
 		# hashcash
 		if ( function_exists('wphc_add_commentform') ) {
-			add_filter('option_plugin_wp-hashcash', array('sem_fixes', 'hc_options'));
+			add_filter('option_plugin_wp-hashcash', array($this, 'hc_options'));
 			remove_action('admin_menu', 'wphc_add_options_to_admin');
 			remove_action('widgets_init', 'wphc_widget_init');
 			remove_action('comment_form', 'wphc_add_commentform');
 			remove_action('wp_head', 'wphc_posthead');
-			add_action('comment_form', array('sem_fixes', 'hc_add_message'));
-			add_action('wp_head', array('sem_fixes', 'hc_addhead'));
+			add_action('comment_form', array($this, 'hc_add_message'));
+			add_action('wp_head', array($this, 'hc_addhead'));
 			
 			if ( is_admin() )
 				remove_filter('preprocess_comment', 'wphc_check_hidden_tag');
@@ -250,7 +309,7 @@ class sem_fixes {
 	 * @return array $o
 	 **/
 	
-	function hc_options($o) {
+	static function hc_options($o) {
 		if ( function_exists('akismet_init') && get_option('wordpress_api_key') ) {
 			$o['moderation'] = 'akismet';
 		} else {
@@ -420,7 +479,7 @@ EOS;
 		
 		if ( !isset($GLOBALS['wp_rewrite']) ) $GLOBALS['wp_rewrite'] = new WP_Rewrite;
 		
-		remove_filter('mod_rewrite_rules', array('sem_fixes', 'rewrite_rules'));
+		remove_filter('mod_rewrite_rules', array($this, 'rewrite_rules'));
 		
 		global $wp_rewrite;
 		$wp_rewrite->flush_rules();
@@ -448,45 +507,6 @@ EOS;
 if ( is_admin() )
 	include dirname(__FILE__) . '/sem-fixes-admin.php';
 
-register_activation_hook(__FILE__, array('sem_fixes', 'activate'));
-register_deactivation_hook(__FILE__, array('sem_fixes', 'deactivate'));
-
-add_action('plugins_loaded', array('sem_fixes', 'plugins_loaded'));
-
-if ( !is_admin() ) {
-	# add uninitialized akismet option
-	add_option('akismet_connectivity_time', 0);
-	
-	# remove #more-id in more links
-	add_filter('the_content_more_link', array('sem_fixes', 'fix_more'), 10000);
-
-	# fix wysiwyg
-	add_option('fix_wysiwyg', '0');
-	if ( get_option('fix_wysiwyg') )
-		add_filter('the_content', array('sem_fixes', 'fix_wysiwyg'), 10000);
-
-	# kill generator
-	remove_action('wp_head', 'wp_generator');
-	add_filter('the_generator', array('sem_fixes', 'the_generator'));
-}
-
-# http://core.trac.wordpress.org/ticket/9873
-sem_fixes::readonly_url();
-
-# http://core.trac.wordpress.org/ticket/6698
-if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
-	sem_fixes::do_generic_ping();
-
-# http://core.trac.wordpress.org/ticket/9874
-add_filter('tiny_mce_before_init', array('sem_fixes', 'tiny_mce_config'));
-
-# fix plugins
-add_action('plugins_loaded', array('sem_fixes', 'fix_plugins'));
-
-# http://core.trac.wordpress.org/ticket/3426  // fixed in WP 3.0
-if ( !function_exists('wp_favicon_request'))
-    add_filter('mod_rewrite_rules', array('sem_fixes', 'rewrite_rules'));
-
 # http://core.trac.wordpress.org/ticket/6779 // fixed WP 2.9
 if ( !function_exists('add_theme_support') && !function_exists('wp_redirect') ) :
 function wp_redirect($location, $status = 302) {
@@ -510,17 +530,6 @@ function wp_redirect($location, $status = 302) {
 }
 endif;
 
-# http://core.trac.wordpress.org/ticket/9105
-if ( !get_option('show_on_front') )
-	update_option('show_on_front', 'posts');
 
-# http://core.trac.wordpress.org/changeset/14996
-foreach ( array('the_content', 'the_title', 'comment_text') as $hook ) {
-	remove_filter($hook, 'capital_P_dangit');
-	remove_filter($hook, 'capital_P_dangit', 11);
-	remove_filter($hook, 'capital_P_dangit', 31);
-}
-
-# Fix curl SSL
-add_filter('http_api_curl', array('sem_fixes', 'curl_ssl'));
+$sem_fixes = new sem_fixes();
 ?>

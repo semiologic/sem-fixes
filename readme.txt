@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.5
-Tested up to: 3.5.1
+Tested up to: 3.6
 Stable tag: trunk
 
 Fixes a variety of WP and WP plugin bugs.
@@ -29,6 +29,12 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.2 =
+
+- WP 3.6 compat
+- PHP 5.4 compat
+- Removed post revision crippling and defer to WP settings for controlling revision control
 
 = 2.1.5 =
 
