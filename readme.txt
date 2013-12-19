@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.5
-Tested up to: 3.6
+Tested up to: 3.8
 Stable tag: trunk
 
 Fixes a variety of WP and WP plugin bugs.
@@ -17,6 +17,11 @@ When WP is broken and I feel there is little or no chances this will get fixed i
 
 The exact bugs vary from a WP version to the next. Suffice it to say that you want this one to be active at all times.
 
+= Post Revisions =
+
+Yikes! The post and page revisions get out of control if left unchecked.   If you don't specically set the 'WP_POST_REVISIONS" to false or a number to limit them to, sem-fixes sets a limit of 5.
+
+
 = Help Me! =
 
 The [Semiologic forum](http://forum.semiologic.com) is the best place to report issues.
@@ -29,6 +34,14 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.3 =
+
+- TinyMCE configuration has been dropped from the plugin due to endless tinyMCE updates.   The [TinyMCE Advanced](http://wordpress.org/plugins/tinymce-advanced/) plugin should be directly installed to handled the appropriate add-on versions needed.
+  The current toolbar setup will be initialized in the tinyMCE settings.
+- Added custom wp_redirect function to better handle browser 301 caching glitches.
+- Added back some post/page revision limiting.
+- WP 3.8 compat
 
 = 2.2 =
 

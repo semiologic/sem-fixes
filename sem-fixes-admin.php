@@ -9,8 +9,12 @@ class sem_fixes_admin {
     /**
      * sem_fixes_admin()
      */
-    function sem_fixes_admin() {
+	public function __construct() {
         global $wp_version;
+
+		$version = get_option('sem_fixes_version');
+		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) && !defined('DOING_CRON') )
+  	        add_action('admin_init', array($this, 'upgrade'));
 
         if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
         	# http://core.trac.wordpress.org/ticket/9935
@@ -34,26 +38,19 @@ class sem_fixes_admin {
             if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
                 add_action('save_post', array($this, 'save_post_revision'), 1000000);
         }
-/*        else {
-            // use 3.6 filter wp_revisions_to_keep is we wish to stop revisions automatically
-            add_filter('wp_revisions_to_keep', array($this, 'turn_off_post_revisions'), 0, 2);
+        else {
+            // use 3.6 filter wp_revisions_to_keep to limit post revisions
+	        if ( defined('WP_POST_REVISIONS') && WP_POST_REVISIONS === true )
+                add_filter('wp_revisions_to_keep', array($this, 'limit_post_revisions'), 0, 2);
         }
-*/
+
 
         # http://core.trac.wordpress.org/ticket/9876
         add_action('admin_menu', array($this, 'sort_admin_menu'), 1000000);
 
-        # tinymce
-        add_filter('tiny_mce_before_init', array($this, 'editor_options'), -1000);
-        add_filter('mce_external_plugins', array($this, 'editor_plugin'), 1000);
-        add_filter('mce_buttons', array($this, 'editor_buttons'), -1000);
-        add_filter('mce_buttons_2', array($this, 'editor_buttons_2'), -1000);
-        add_filter('mce_buttons_3', array($this, 'editor_buttons_3'), -1000);
-        add_filter('mce_buttons_4', array($this, 'editor_buttons_4'), -1000);
-
         # scripts and styles
-        add_action('admin_print_scripts', array($this, 'admin_print_scripts'));
-        add_action('admin_print_styles', array($this, 'admin_print_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
 
         # http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
         // add_action('admin_notices', array($this, 'fix_password_nag'), 0);
@@ -176,7 +173,7 @@ class sem_fixes_admin {
 	} # get_comment_9935()
 
     /**
-   	 * turn_off_post_revisions()
+   	 * limit_post_revisions()
    	 *
    	 * @param object $post
      * @param int $num
@@ -184,10 +181,10 @@ class sem_fixes_admin {
    	 * @return int
    	 **/
 
-/*   	function turn_off_post_revisions($num, $post) {
-        return 0;
+  	function limit_post_revisions($num, $post) {
+        return 5;
     }
-*/
+
 
 	/**
 	 * save_post_revision()
@@ -331,115 +328,7 @@ class sem_fixes_admin {
 	function strnatcasecmp_submenu($a, $b) {
 		return strnatcasecmp($a[0], $b[0]);
 	} # strnatcasecmp_submenu()
-	
-	
-	/**
-	 * editor_options()
-	 *
-	 * @param array $init
-	 * @return array $init
-	 **/
-	
-	function editor_options($init) {
-		$init['wordpress_adv_hidden'] = false;
-		
-		return $init;
-	} # editor_options()
-	
-	
-	/**
-	 * editor_plugin()
-	 *
-	 * @param array $plugin_array
-	 * @return array $plugin_array
-	 **/
-	
-	function editor_plugin($plugin_array) {
-		if ( get_user_option('rich_editing') == 'true') {
-			$folder = plugin_dir_url(__FILE__);
 
-            global $wp_version;
-            $tincymce_dir = 'pre-wp35/tinymce/';
-          	if ( version_compare( $wp_version, '3.5', '>=') )
-                $tincymce_dir = 'tinymce/';
-			
-			foreach ( array('advlink', 'advlist', 'nonbreaking', 'emotions', 'searchreplace', 'table', ) as $plugin ) {
-				$file = $folder . $tincymce_dir . $plugin . '/editor_plugin.js';
-				$plugin_array[$plugin] = $file;
-			}
-		}
-
-		return $plugin_array;
-	} # editor_plugin()
-	
-	
-	/**
-	 * editor_buttons()
-	 *
-	 * @param array $buttons
-	 * @return array $buttons
-	 **/
-	
-	function editor_buttons($buttons) {
-		return array(
-			'bold', 'italic', 'underline', 'strikethrough', '|',
-            'sup', 'sub', 'blockquote', '|',
-			'outdent', 'indent', '|',
-			'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
-			'link', 'unlink', 'anchor',
-			);
-	} # editor_buttons()
-	
-	
-	/**
-	 * editor_buttons_2()
-	 *
-	 * @param array $buttons
-	 * @return array $buttons
-	 **/
-	
-	function editor_buttons_2($buttons) {
-		return array(
-			'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', 'backcolor', '|',
-			'emotions', 'charmap', 'nonbreaking',
-			);
-	} # editor_buttons_2()
-	
-	
-	/**
-	 * editor_buttons_3()
-	 *
-	 * @param array $buttons
-	 * @return array $buttons
-	 **/
-	
-	function editor_buttons_3($buttons) {
-		return array(
-			'tablecontrols', '|',
-			'wp_more', 'wp_page', '|', 'hr', '|',
-			'spellchecker','|',
-            'wp_help',
-			);
-	} # editor_buttons_3()
-	
-	
-	/**
-	 * editor_buttons_3()
-	 *
-	 * @param array $buttons
-	 * @return array $buttons
-	 **/
-	
-	function editor_buttons_4($buttons) {
-		return array(
-            'bullist', 'numlist', '|',
-            'pastetext', 'pasteword', 'removeformat', '|',
-			'search', 'replace', '|',
-			'undo', 'redo', '|',
-            'code', '|', 'fullscreen',
-			);
-	} # editor_buttons_4()
-	
 	
 	/**
 	 * admin_print_scripts()
@@ -493,7 +382,89 @@ EOS;
 		if ( !$pref && $pref !== array() )
 			update_user_meta($user_ID, 'default_password_nag', array());
 	} # fix_password_nag()
+
+
+	/**
+	 * upgrade()
+	 *
+	 * @return void
+	 **/
+
+	function upgrade() {
+
+		$tadv_buts = get_option( 'tadv_btns4' );
+		if ( $tadv_buts === false || empty( $tadv_buts ) ) {
+			$tadv_btns1 = array(
+				'bold', 'italic', 'underline', 'strikethrough', '|',
+	            'sup', 'sub', 'blockquote', '|',
+				'outdent', 'indent', '|',
+				'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
+				'link', 'unlink', 'anchor', 'image',
+				);
+
+			$tadv_btns2 = array(
+				'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', 'backcolor', '|',
+				'emotions', 'charmap', 'nonbreaking', 'spellchecker',
+				);
+
+			$tadv_btns3 = array(
+				'tablecontrols', 'delete_table', '|',
+				'wp_more', 'wp_page', '|', 'hr', '|',
+				'styleselect', '|', 'wp_help',
+				);
+
+			$tadv_btns4 = array(
+				'bullist', 'numlist', '|',
+                'pastetext', 'pasteword', 'removeformat', '|',
+				'search', 'replace', '|',
+				'undo', 'redo', '|', 'fullscreen',
+				);
+
+			update_option( 'tadv_btns1', $tadv_btns1 );
+
+			update_option( 'tadv_btns2', $tadv_btns2 );
+
+			update_option( 'tadv_btns3', $tadv_btns3 );
+
+			update_option( 'tadv_btns4', $tadv_btns4 );
+
+			update_option( 'tadv_toolbars', array(
+				'toolbar_1' => $tadv_btns1,
+				'toolbar_2' => $tadv_btns2,
+				'toolbar_3' => $tadv_btns3,
+				'toolbar_4' => $tadv_btns4 )
+			);
+
+			update_option( 'tadv_options', array(
+				'advlink1' => 1,
+				'advimage' => 1,
+				'editorstyle' => 0,
+				'hideclasses' => 0,
+				'contextmenu' => 1,
+				'no_autop' => 0,
+				'advlist' => 1,
+				) );
+
+			update_option( 'tadv_plugins', array(
+				'nonbreaking',
+				'emotions',
+				'table',
+				'searchreplace',
+				'advlink',
+				'advlist',
+				'advimage',
+				'contextmenu'
+				) );
+
+			$tadv_allbtns = array( 'wp_adv', 'bold', 'italic', 'strikethrough', 'underline', 'bullist', 'numlist', 'outdent', 'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'cut', 'copy', 'paste', 'link', 'unlink', 'image', 'wp_more', 'wp_page', 'search', 'replace', 'fontselect', 'fontsizeselect', 'wp_help', 'fullscreen', 'styleselect', 'formatselect', 'forecolor', 'backcolor', 'pastetext', 'pasteword', 'removeformat', 'cleanup', 'spellchecker', 'charmap', 'print', 'undo', 'redo', 'tablecontrols', 'cite', 'ins', 'del', 'abbr', 'acronym', 'attribs', 'layer', 'advhr', 'code', 'visualchars', 'nonbreaking', 'sub', 'sup', 'visualaid', 'insertdate', 'inserttime', 'anchor', 'styleprops', 'emotions', 'media', 'blockquote', 'separator', '|' );
+
+			update_option( 'tadv_allbtns', $tadv_allbtns );
+
+		}
+
+		update_option( 'sem_fixes_version', sem_fixes_version );
+	}
+
 } # sem_fixes_admin
 
 $sem_fixes_admin = new sem_fixes_admin();
-?>

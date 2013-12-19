@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.2
+Version: 2.3 beta
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -22,6 +22,7 @@ http://www.mesoconcepts.com/license/
 
 load_plugin_textdomain('sem-fixes', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
+define('sem_fixes_version', '2.3');
 
 /**
  * sem_fixes
@@ -34,8 +35,8 @@ if ( !defined('MAGPIE_FETCH_TIME_OUT') )
 	define('MAGPIE_FETCH_TIME_OUT', 4);	// 4 second timeout, instead of 2
 
 # fix shortcodes
-if ( @ini_get('pcre.backtrack_limit') <= 750000 )
-	@ini_set('pcre.backtrack_limit', 750000);
+if ( @ini_get('pcre.backtrack_limit') <= 1000000 )
+	@ini_set('pcre.backtrack_limit', 1000000);
 if ( @ini_get('pcre.recursion_limit') <= 250000 )
 	@ini_set('pcre.recursion_limit', 250000);
 
@@ -44,20 +45,26 @@ if ( function_exists('date_default_timezone_set') )
 	date_default_timezone_set('UTC');
 wp_timezone_override_offset();
 
+
+if (!defined('AUTOMATIC_UPDATER_DISABLED'))
+	define('AUTOMATIC_UPDATER_DISABLED',  true);
+
+
 class sem_fixes {
     /**
      * sem_fixes()
      */
-    function sem_fixes() {
+	public function __construct() {
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+		$version = get_option('sem_fixes_version');
+		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) && !defined('DOING_CRON') )
+ 	        add_action('init', array($this, 'upgrade'));
 
         add_action('plugins_loaded', array($this, 'plugins_loaded'));
 
         if ( !is_admin() ) {
-        	# add uninitialized akismet option
-        	add_option('akismet_connectivity_time', 0);
-
         	# remove #more-id in more links
         	add_filter('the_content_more_link', array($this, 'fix_more'), 10000);
 
@@ -101,6 +108,9 @@ class sem_fixes {
 
         # Fix curl SSL
         add_filter('http_api_curl', array($this, 'curl_ssl'));
+
+		if ( is_admin() )
+			include dirname(__FILE__) . '/sem-fixes-admin.php';
     }
 
 
@@ -431,7 +441,7 @@ RewriteRule . /
 EOS;
 			$rules = str_replace($from, $to, $rules);
 		}
-		
+
 		return $rules;
 	} # rewrite_rules()
 	
@@ -448,8 +458,8 @@ EOS;
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		return $ch;
 	}
-	
-	
+
+
 	/**
 	 * activate()
 	 *
@@ -502,34 +512,50 @@ EOS;
 		if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2', '2.7.3') ) && !function_exists('jms_libxml2_fix') )
 			include_once dirname(__FILE__) . '/inc/libxml2-fix.php';
 	} # plugins_loaded()
+
+
+	/**
+	 * upgrade()
+	 *
+	 * @return void
+	 **/
+
+	function upgrade() {
+
+//		update_option( 'sem_fixes_version', sem_fixes_version );
+
+	}
+
 } # sem_fixes
 
-if ( is_admin() )
-	include dirname(__FILE__) . '/sem-fixes-admin.php';
-
-# http://core.trac.wordpress.org/ticket/6779 // fixed WP 2.9
-if ( !function_exists('add_theme_support') && !function_exists('wp_redirect') ) :
+if ( !function_exists('wp_redirect') ) :
+/**
+ * Redirects to another page.
+ *
+ * @param string $location The path to redirect to.
+ * @param int $status Status code to use.
+ * @return bool False if $location is not provided, true otherwise.
+ */
 function wp_redirect($location, $status = 302) {
 	global $is_IIS;
 
-	$location = apply_filters('wp_redirect', $location, $status);
-	$status = apply_filters('wp_redirect_status', $status, $location);
+	$location = apply_filters( 'wp_redirect', $location, $status );
 
-	if ( !$location ) // allows the wp_redirect filter to cancel a redirect
+	$status = apply_filters( 'wp_redirect_status', $status, $location );
+
+	if ( ! $location )
 		return false;
 
 	$location = wp_sanitize_redirect($location);
 
-	if ( $is_IIS ) {
-		header("Refresh: 0;url=$location");
-	} else {
-		if ( php_sapi_name() != 'cgi-fcgi' )
-			status_header($status); // This causes problems on IIS and some FastCGI setups
-		header("Location: $location", true, $status);
-	}
+	if ( !$is_IIS && php_sapi_name() != 'cgi-fcgi' )
+		status_header($status); // This causes problems on IIS and some FastCGI setups
+
+	header("Cache-Control: no-store, no-cache, must-revalidate");
+	header("Location: $location", true, $status);
+
+	return true;
 }
 endif;
 
-
 $sem_fixes = new sem_fixes();
-?>
