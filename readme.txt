@@ -40,6 +40,7 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 - TinyMCE configuration has been dropped from the plugin due to endless tinyMCE updates.   The [TinyMCE Advanced](http://wordpress.org/plugins/tinymce-advanced/) plugin should be directly installed to handled the appropriate add-on versions needed.
   The current toolbar setup will be initialized in the tinyMCE settings.
 - Added custom wp_redirect function to better handle browser 301 caching glitches.
+- Disable automatic WordPress updating
 - Added back some post/page revision limiting.
 - WP 3.8 compat
 
