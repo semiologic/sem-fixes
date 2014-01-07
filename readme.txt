@@ -35,6 +35,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.3.1 =
+
+- Fix license text
+
 = 2.3 =
 
 - TinyMCE configuration has been dropped from the plugin due to endless tinyMCE updates.   The [TinyMCE Advanced](http://wordpress.org/plugins/tinymce-advanced/) plugin should be directly installed to handled the appropriate add-on versions needed.
