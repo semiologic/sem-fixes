@@ -35,6 +35,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.4 =
+
+- Code refactoring
+
 = 2.3.1 =
 
 - Fix license text

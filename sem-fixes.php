@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.3.1
+Version: 2.4 dev
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -18,8 +18,6 @@ Terms of use
 This software is copyright Denis de Bernardy & Mike Koepke, and is distributed under the terms of the MIT and GPLv2 licenses.
 **/
 
-
-load_plugin_textdomain('sem-fixes', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
 define('sem_fixes_version', '2.3');
 
@@ -50,68 +48,156 @@ if (!defined('AUTOMATIC_UPDATER_DISABLED'))
 
 
 class sem_fixes {
-    /**
-     * sem_fixes()
-     */
+	/**
+	 * Plugin instance.
+	 *
+	 * @see get_instance()
+	 * @type object
+	 */
+	protected static $instance = NULL;
+
+	/**
+	 * URL to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_url = '';
+
+	/**
+	 * Path to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_path = '';
+
+	/**
+	 * Access this plugin’s working instance
+	 *
+	 * @wp-hook plugins_loaded
+	 * @return  object of this class
+	 */
+	public static function get_instance()
+	{
+		NULL === self::$instance and self::$instance = new self;
+
+		return self::$instance;
+	}
+
+	/**
+	 * Loads translation file.
+	 *
+	 * Accessible to other classes to load different language files (admin and
+	 * front-end for example).
+	 *
+	 * @wp-hook init
+	 * @param   string $domain
+	 * @return  void
+	 */
+	public function load_language( $domain )
+	{
+		load_plugin_textdomain(
+			$domain,
+			FALSE,
+			$this->plugin_path . 'lang'
+		);
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 *
+	 */
+
 	public function __construct() {
-        register_activation_hook(__FILE__, array($this, 'activate'));
-        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+		$this->plugin_url    = plugins_url( '/', __FILE__ );
+		$this->plugin_path   = plugin_dir_path( __FILE__ );
+		$this->load_language( 'sem-fixes' );
 
-		$version = get_option('sem_fixes_version');
-		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) && !defined('DOING_CRON') )
- 	        add_action('init', array($this, 'upgrade'));
-
-        add_action('plugins_loaded', array($this, 'plugins_loaded'));
-
-        if ( !is_admin() ) {
-        	# remove #more-id in more links
-        	add_filter('the_content_more_link', array($this, 'fix_more'), 10000);
-
-        	# fix wysiwyg
-        	add_option('fix_wysiwyg', '0');
-        	if ( get_option('fix_wysiwyg') )
-        		add_filter('the_content', array($this, 'fix_wysiwyg'), 10000);
-
-        	# kill generator
-        	remove_action('wp_head', 'wp_generator');
-        	add_filter('the_generator', array($this, 'the_generator'));
-        }
-
-        # http://core.trac.wordpress.org/ticket/9873
-        sem_fixes::readonly_url();
-
-        # http://core.trac.wordpress.org/ticket/6698
-        if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
-            sem_fixes::do_generic_ping();
-
-        # http://core.trac.wordpress.org/ticket/9874
-        add_filter('tiny_mce_before_init', array($this, 'tiny_mce_config'));
-
-        # fix plugins
-        add_action('plugins_loaded', array($this, 'fix_plugins'));
-
-        # http://core.trac.wordpress.org/ticket/3426  // fixed in WP 3.0
-        if ( !function_exists('wp_favicon_request'))
-            add_filter('mod_rewrite_rules', array($this, 'rewrite_rules'));
-
-        # http://core.trac.wordpress.org/ticket/9105
-        if ( !get_option('show_on_front') )
-            update_option('show_on_front', 'posts');
-
-        # http://core.trac.wordpress.org/changeset/14996
-        foreach ( array('the_content', 'the_title', 'comment_text') as $hook ) {
-            remove_filter($hook, 'capital_P_dangit');
-            remove_filter($hook, 'capital_P_dangit', 11);
-            remove_filter($hook, 'capital_P_dangit', 31);
-        }
-
-        # Fix curl SSL
-        add_filter('http_api_curl', array($this, 'curl_ssl'));
+		add_action( 'plugins_loaded', array ( $this, 'init' ) );
 
 		if ( is_admin() )
 			include dirname(__FILE__) . '/sem-fixes-admin.php';
     }
 
+	/**
+	 * init()
+	 *
+	 * @return void
+	 **/
+
+	function init() {
+		// more stuff: register actions and filters
+		register_activation_hook(__FILE__, array($this, 'activate'));
+		register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+		$version = get_option('sem_fixes_version');
+		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) && !defined('DOING_CRON') )
+			add_action('init', array($this, 'upgrade'));
+
+		if ( !is_admin() ) {
+		# remove #more-id in more links
+			add_filter('the_content_more_link', array($this, 'fix_more'), 10000);
+
+			# fix wysiwyg
+			add_option('fix_wysiwyg', '0');
+			if ( get_option('fix_wysiwyg') )
+			    add_filter('the_content', array($this, 'fix_wysiwyg'), 10000);
+
+			# kill generator
+			remove_action('wp_head', 'wp_generator');
+			add_filter('the_generator', array($this, 'the_generator'));
+		}
+
+		# http://core.trac.wordpress.org/ticket/9873
+		sem_fixes::readonly_url();
+
+		# http://core.trac.wordpress.org/ticket/6698
+		if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
+		    sem_fixes::do_generic_ping();
+
+		# http://core.trac.wordpress.org/ticket/9874
+		add_filter('tiny_mce_before_init', array($this, 'tiny_mce_config'));
+
+
+		# http://core.trac.wordpress.org/ticket/9105
+		if ( !get_option('show_on_front') )
+		    update_option('show_on_front', 'posts');
+
+		# http://core.trac.wordpress.org/changeset/14996
+		foreach ( array('the_content', 'the_title', 'wp_title' ) as $hook ) {
+			remove_filter($hook, 'capital_P_dangit');
+			remove_filter($hook, 'capital_P_dangit', 11);
+		}
+		remove_filter('comment_text', 'capital_P_dangit', 31);
+
+		# Fix curl SSL
+		add_filter('http_api_curl', array($this, 'curl_ssl'));
+
+		# https://core.trac.wordpress.org/ticket/26974
+		add_filter( 'date_rewrite_rules', array($this, 'stripDayRules'));
+
+		$this->load_plugins();
+		$this->fix_plugins();
+
+	}
+
+
+	/**
+	 * load_plugins()
+	 *
+	 * @return void
+	 **/
+
+	function load_plugins() {
+		if ( !function_exists('wpguy_category_order_menu') )
+			include_once dirname(__FILE__) . '/inc/category-order.php';
+
+		if ( is_admin() && !function_exists('mypageorder_menu') )
+			include_once dirname(__FILE__) . '/inc/mypageorder.php';
+
+		if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2', '2.7.3') ) && !function_exists('jms_libxml2_fix') )
+			include_once dirname(__FILE__) . '/inc/libxml2-fix.php';
+	} # plugins_loaded()
 
     /**
 	 * fix_more()
@@ -401,49 +487,7 @@ addLoadEvent(function(){
 
 EOS;
 	} # hc_addhead()
-	
-	
-	/**
-	 * rewrite_rules()
-	 *
-	 * @param string $rules
-	 * @return string $rules
-	 **/
 
-	function rewrite_rules($rules) {
-		$extra = <<<EOS
-
-RewriteRule \.(gif|png|jpe?g|ico)$ - [NC,L]
-
-EOS;
-		
-		# this will simply fail if mod_rewrite isn't available
-		if ( preg_match("/RewriteBase.+\n*/i", $rules, $rewrite_base) ) {
-			$rewrite_base = end($rewrite_base);
-			$new_rewrite_base = trim($rewrite_base) . "\n\n" . trim($extra) . "\n\n";
-			$rules = str_replace($rewrite_base, $new_rewrite_base, $rules);
-			
-			# optimize the mess: http://core.trac.wordpress.org/ticket/11884
-			$from = <<<EOS
-
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /
-EOS;
-			$to = <<<EOS
-
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
-
-RewriteRule . /
-EOS;
-			$rules = str_replace($from, $to, $rules);
-		}
-
-		return $rules;
-	} # rewrite_rules()
-	
 	
 	/**
 	 * Disable SSL validation for Curl
@@ -458,6 +502,25 @@ EOS;
 		return $ch;
 	}
 
+
+	/**
+    * Disables day links when using /yyyy/mm/slug/ permalinks
+    *
+    * @see https://core.trac.wordpress.org/ticket/5305
+    * @see https://core.trac.wordpress.org/ticket/26974
+    *
+    * @param array $date_rewrite_rules
+    * @return array $date_rewrite_rules
+    */
+    public function stripDayRules($date_rewrite_rules)
+    {
+		if ($this->option->get('permalink_structure') == '/%year%/%monthnum%/%postname%/') {
+		    $date_rewrite_rules = array_filter($date_rewrite_rules, function($rule) {
+		       return strpos($rule, '&day=') === false;
+		    });
+		}
+		return $date_rewrite_rules;
+    }
 
 	/**
 	 * activate()
@@ -493,24 +556,6 @@ EOS;
 		global $wp_rewrite;
 		$wp_rewrite->flush_rules();
 	} # deactivate()
-	
-	
-	/**
-	 * plugins_loaded()
-	 *
-	 * @return void
-	 **/
-
-	function plugins_loaded() {
-		if ( !function_exists('wpguy_category_order_menu') )
-			include_once dirname(__FILE__) . '/inc/category-order.php';
-
-		if ( is_admin() && !function_exists('mypageorder_menu') )
-			include_once dirname(__FILE__) . '/inc/mypageorder.php';
-
-		if ( defined('LIBXML_DOTTED_VERSION') && in_array(LIBXML_DOTTED_VERSION, array('2.7.0', '2.7.1', '2.7.2', '2.7.3') ) && !function_exists('jms_libxml2_fix') )
-			include_once dirname(__FILE__) . '/inc/libxml2-fix.php';
-	} # plugins_loaded()
 
 
 	/**
@@ -557,4 +602,4 @@ function wp_redirect($location, $status = 302) {
 }
 endif;
 
-$sem_fixes = new sem_fixes();
+$sem_fixes = sem_fixes::get_instance();

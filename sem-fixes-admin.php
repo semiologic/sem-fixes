@@ -5,57 +5,125 @@
  * @package Semiologic Fixes
  **/
 
+
 class sem_fixes_admin {
-    /**
-     * sem_fixes_admin()
-     */
+	/**
+	 * Plugin instance.
+	 *
+	 * @see get_instance()
+	 * @type object
+	 */
+	protected static $instance = NULL;
+
+	/**
+	 * URL to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_url = '';
+
+	/**
+	 * Path to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_path = '';
+
+	/**
+	 * Access this plugin’s working instance
+	 *
+	 * @wp-hook plugins_loaded
+	 * @return  object of this class
+	 */
+	public static function get_instance()
+	{
+		NULL === self::$instance and self::$instance = new self;
+
+		return self::$instance;
+	}
+
+
+	/**
+	 * Loads translation file.
+	 *
+	 * Accessible to other classes to load different language files (admin and
+	 * front-end for example).
+	 *
+	 * @wp-hook init
+	 * @param   string $domain
+	 * @return  void
+	 */
+	public function load_language( $domain )
+	{
+		load_plugin_textdomain(
+			$domain,
+			FALSE,
+			$this->plugin_path . 'lang'
+		);
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 *
+	 */
+
 	public function __construct() {
-        global $wp_version;
+		$this->plugin_url    = plugins_url( '/', __FILE__ );
+		$this->plugin_path   = plugin_dir_path( __FILE__ );
+		$this->load_language( 'sem-fixes' );
+
+		add_action( 'plugins_loaded', array ( $this, 'init' ) );
+    }
+
+	/**
+	 * init()
+	 *
+	 * @return void
+	 **/
+
+	function init() {
+		// more stuff: register actions and filters
+		global $wp_version;
 
 		$version = get_option('sem_fixes_version');
 		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) && !defined('DOING_CRON') )
-  	        add_action('admin_init', array($this, 'upgrade'));
+	        add_action('admin_init', array($this, 'upgrade'));
 
-        if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
-        	# http://core.trac.wordpress.org/ticket/9935
-        	add_action('load-edit-comments.php', create_function('', "add_action('get_comment', array($this, 'get_comment_9935'));"));
-        }
-
-        # http://core.trac.wordpress.org/ticket/10851   // fixed in 2.8.4
-        // add_filter('content_save_pre', array('sem_fixes_admin', 'fix_tinymce_junk'), 0);
-
-        # http://core.trac.wordpress.org/ticket/4298
-        add_filter('content_save_pre', array($this, 'fix_wpautop'), 0);
-        add_filter('excerpt_save_pre', array($this, 'fix_wpautop'), 0);
-        add_filter('pre_term_description', array($this, 'fix_wpautop'), 0);
-        add_filter('pre_user_description', array($this, 'fix_wpautop'), 0);
-        add_filter('pre_link_description', array($this, 'fix_wpautop'), 0);
+		# http://core.trac.wordpress.org/ticket/4298
+		add_filter('content_save_pre', array($this, 'fix_wpautop'), 0);
+		add_filter('excerpt_save_pre', array($this, 'fix_wpautop'), 0);
+		add_filter('pre_term_description', array($this, 'fix_wpautop'), 0);
+		add_filter('pre_user_description', array($this, 'fix_wpautop'), 0);
+		add_filter('pre_link_description', array($this, 'fix_wpautop'), 0);
 
 
-        // this was address in 3.6 by http://core.trac.wordpress.org/changeset/23414
-        if ( version_compare( $wp_version, '3.6', '<' ) ) {
-            # http://core.trac.wordpress.org/ticket/9843
-            if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
-                add_action('save_post', array($this, 'save_post_revision'), 1000000);
-        }
-        else {
-            // use 3.6 filter wp_revisions_to_keep to limit post revisions
-	        if ( defined('WP_POST_REVISIONS') && WP_POST_REVISIONS === true )
-                add_filter('wp_revisions_to_keep', array($this, 'limit_post_revisions'), 0, 2);
-        }
+		// this was address in 3.6 by http://core.trac.wordpress.org/changeset/23414
+		if ( version_compare( $wp_version, '3.6', '<' ) ) {
+		    # http://core.trac.wordpress.org/ticket/9843
+		    if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
+		        add_action('save_post', array($this, 'save_post_revision'), 1000000);
+		}
+		else {
+		  // use 3.6 filter wp_revisions_to_keep to limit post revisions
+			if ( defined('WP_POST_REVISIONS') && WP_POST_REVISIONS === true )
+		        add_filter('wp_revisions_to_keep', array($this, 'limit_post_revisions'), 0, 2);
+		}
 
+		# http://core.trac.wordpress.org/ticket/9876
+		add_action('admin_menu', array($this, 'sort_admin_menu'), 1000000);
 
-        # http://core.trac.wordpress.org/ticket/9876
-        add_action('admin_menu', array($this, 'sort_admin_menu'), 1000000);
+		# scripts and styles
+		add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
+		add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
 
-        # scripts and styles
-        add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
-        add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
+		# https://core.trac.wordpress.org/ticket/26978
+		add_action('parent_file', array($this, 'rewriteDashboardLink'));
+		add_action('adminmenu', array($this, 'flushRewriteDashboardLink'));
 
-        # http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
-        // add_action('admin_notices', array($this, 'fix_password_nag'), 0);
-    }
-
+		# http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
+		// add_action('admin_notices', array($this, 'fix_password_nag'), 0);
+	}
 
     /**
 	 * fix_wpautop()
@@ -104,73 +172,7 @@ class sem_fixes_admin {
 		
 		return $tag_id;
 	} # escape_php_callback()
-	
-	
-	/**
-	 * fix_tinymce_junk()
-	 *
-	 * @param string $content
-	 * @return string $content
-	 **/
 
-	function fix_tinymce_junk($content) {
-		if ( strpos($content, '_mcePaste') === false )
-			return $content;
-		
-		# mental note: $content is escaped
-		do {
-			$old_content = $content;
-			$content = preg_replace_callback("~(<div id=\"_mcePaste\".*?>)(.*?)(</div>)~is", array($this, 'fix_tinymce_paste_callback'), $old_content);
-		} while ( $content && $content != $old_content );
-		
-		# http://digitizor.com/2009/08/26/how-to-fix-the-gwproxy-jsproxy/
-		$content = preg_replace(array('~<input id="gwProxy" type="hidden" />~', '~<input id="jsProxy" onclick="jsCall();" type="hidden" />~'), '', $content);
-		
-		return $content;
-	} # fix_tinymce_junk()
-	
-	
-	/**
-	 * fix_tinymce_paste_callback()
-	 *
-	 * @param array $match
-	 * @return string $output
-	 **/
-	
-	function fix_tinymce_paste_callback($match) {
-		$content = $match[2];
-		
-		if ( !$content || stripos($content, '<div') === false )
-			return '';
-		
-		$content .= $match[3];
-		do {
-			$old_content = $content;
-			$content = preg_replace("~<div.*?>.*?</div>~is", '', $old_content);
-		} while ( $content && $content != $old_content );
-		
-		return $match[1] . $content;
-	} # fix_tinymce_paste_callback()
-	
-	
-	/**
-	 * get_comment_9935()
-	 * 
-	 * @see http://core.trac.wordpress.org/ticket/9935
-	 * 
-	 * @param  stdclass $comment comment to gets.
-	 * @return stdclass comment to be edited
-	 */
-	function get_comment_9935($comment) {
-		static $once = true;
-		
-		if ($once) {
-			$once = false;
-			$comment = get_comment_to_edit($comment->comment_ID);			
-		}
-		
-		return $comment;								
-	} # get_comment_9935()
 
     /**
    	 * limit_post_revisions()
@@ -337,13 +339,6 @@ class sem_fixes_admin {
 	 **/
 
 	function admin_print_scripts() {
-		if ( !function_exists('add_theme_support') ) { // introduced in WP 2.9
-			$folder = plugin_dir_url(__FILE__);
-			wp_deregister_script('common');
-			wp_deregister_script('admin-widgets');
-			wp_register_script('common', $folder . 'js/common.js', array('jquery', 'hoverIntent', 'utils'), '20090815', true);
-			wp_register_script('admin-widgets', $folder . 'js/widgets.js', array('jquery-ui-sortable', 'jquery-ui-draggable', 'jquery-ui-droppable'), '20090815', true);
-		}
 	} # admin_print_scripts()
 	
 	
@@ -383,6 +378,37 @@ EOS;
 			update_user_meta($user_ID, 'default_password_nag', array());
 	} # fix_password_nag()
 
+
+    /**
+	* Rewrite href="index.php" as href="./" in the admin menu.
+	*
+	* @see https://core.trac.wordpress.org/ticket/26978
+	*
+	* @param string $parent_file
+	* @return string $parent_file
+	*/
+	public function rewriteDashboardLink($parent_file)
+	{
+	   ob_start(function($buffer) {
+	       $buffer = str_replace(array(
+	           "href='index.php'", 'href="index.php"'
+	       ), array(
+	           "href='./'", 'href="./"'
+	       ), $buffer);
+	       return $buffer;
+	   });
+
+	   return $parent_file;
+	}
+
+
+	/**
+	* Flushes the output buffer created in rewriteDashboardLink()
+	*/
+	public function flushRewriteDashboardLink()
+	{
+	   ob_end_flush();
+	}
 
 	/**
 	 * upgrade()
@@ -467,4 +493,4 @@ EOS;
 
 } # sem_fixes_admin
 
-$sem_fixes_admin = new sem_fixes_admin();
+$sem_fixes_admin = sem_fixes_admin::get_instance();
