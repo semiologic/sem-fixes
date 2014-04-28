@@ -58,7 +58,7 @@ class sem_fixes_admin {
 		load_plugin_textdomain(
 			$domain,
 			FALSE,
-			$this->plugin_path . 'lang'
+			dirname(plugin_basename(__FILE__)) . '/lang'
 		);
 	}
 
@@ -106,7 +106,7 @@ class sem_fixes_admin {
 		}
 		else {
 		  // use 3.6 filter wp_revisions_to_keep to limit post revisions
-			if ( defined('WP_POST_REVISIONS') && WP_POST_REVISIONS === true )
+			if ( !defined('WP_POST_REVISIONS') ||  !is_int(constant( 'WP_POST_REVISIONS' )) )
 		        add_filter('wp_revisions_to_keep', array($this, 'limit_post_revisions'), 0, 2);
 		}
 
@@ -117,9 +117,6 @@ class sem_fixes_admin {
 		add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
 		add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
 
-		# https://core.trac.wordpress.org/ticket/26978
-		add_action('parent_file', array($this, 'rewriteDashboardLink'));
-		add_action('adminmenu', array($this, 'flushRewriteDashboardLink'));
 
 		# http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
 		// add_action('admin_notices', array($this, 'fix_password_nag'), 0);
@@ -378,37 +375,6 @@ EOS;
 			update_user_meta($user_ID, 'default_password_nag', array());
 	} # fix_password_nag()
 
-
-    /**
-	* Rewrite href="index.php" as href="./" in the admin menu.
-	*
-	* @see https://core.trac.wordpress.org/ticket/26978
-	*
-	* @param string $parent_file
-	* @return string $parent_file
-	*/
-	public function rewriteDashboardLink($parent_file)
-	{
-	   ob_start(function($buffer) {
-	       $buffer = str_replace(array(
-	           "href='index.php'", 'href="index.php"'
-	       ), array(
-	           "href='./'", 'href="./"'
-	       ), $buffer);
-	       return $buffer;
-	   });
-
-	   return $parent_file;
-	}
-
-
-	/**
-	* Flushes the output buffer created in rewriteDashboardLink()
-	*/
-	public function flushRewriteDashboardLink()
-	{
-	   ob_end_flush();
-	}
 
 	/**
 	 * upgrade()

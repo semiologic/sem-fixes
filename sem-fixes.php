@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.4 dev
+Version: 2.4
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -98,7 +98,7 @@ class sem_fixes {
 		load_plugin_textdomain(
 			$domain,
 			FALSE,
-			$this->plugin_path . 'lang'
+			dirname(plugin_basename(__FILE__)) . '/lang'
 		);
 	}
 
@@ -514,13 +514,23 @@ EOS;
     */
     public function stripDayRules($date_rewrite_rules)
     {
-		if ($this->option->get('permalink_structure') == '/%year%/%monthnum%/%postname%/') {
-		    $date_rewrite_rules = array_filter($date_rewrite_rules, function($rule) {
-		       return strpos($rule, '&day=') === false;
-		    });
+		if (get_option('permalink_structure') == '/%year%/%monthnum%/%postname%/') {
+		    $date_rewrite_rules = array_filter($date_rewrite_rules, array($this, 'stripDayRulesFilter'));
 		}
 		return $date_rewrite_rules;
     }
+
+	/**
+	* Filter used in stripDayRules()
+	*
+	* @param string $rule
+	* @return boolean $strip
+	*/
+	public function stripDayRulesFilter($rule)
+	{
+		return strpos($rule, '&day=') === false;
+	}
+
 
 	/**
 	 * activate()

@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.5
-Tested up to: 3.8
+Tested up to: 3.9
 Stable tag: trunk
 
 Fixes a variety of WP and WP plugin bugs.
@@ -37,7 +37,11 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 = 2.4 =
 
+- Post revision limiting was broken allowing unlimited revisions
+- Remove date rules when using /%year%/%monthnum%/%postname%/ permalink structure
 - Code refactoring
+- WP 3.9 compat
+
 
 = 2.3.1 =
 

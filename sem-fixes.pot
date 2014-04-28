@@ -1,77 +1,89 @@
-# Semiologic Fixes pot file.
-# Copyright (C) 2009 Mesoconcepts <http://www.mesoconcepts.com>
+# Copyright (C) 2014 Semiologic Fixes
 # This file is distributed under the same license as the Semiologic Fixes package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.9.5\n"
-"Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-12-12 19:36+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Project-Id-Version: Semiologic Fixes 2.4\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/sem-fixes\n"
+"POT-Creation-Date: 2014-04-28 00:46:34+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
 
-#: inc/mypageorder.php:10 inc/mypageorder.php:69
+#: inc/mypageorder.php:10 inc/mypageorder.php:92
 msgid "My Page Order"
 msgstr ""
 
-#: inc/mypageorder.php:56
+#: inc/mypageorder.php:79
 msgid "Page order updated successfully."
 msgstr ""
 
-#: inc/mypageorder.php:71
+#: inc/mypageorder.php:94
 msgid ""
 "Choose a page from the drop down to order its subpages or order the pages on "
 "this level by dragging and dropping them into the desired order."
 msgstr ""
 
-#: inc/mypageorder.php:77
+#: inc/mypageorder.php:100
 msgid "Return to parent page"
 msgstr ""
 
-#: inc/mypageorder.php:80 inc/mypageorder.php:85
+#: inc/mypageorder.php:103 inc/mypageorder.php:108
 msgid "Order Subpages"
 msgstr ""
 
-#: inc/mypageorder.php:88
+#: inc/mypageorder.php:111
 msgid "Order Pages"
 msgstr ""
 
-#: inc/mypageorder.php:96
+#: inc/mypageorder.php:119
 msgid "Click to Order Pages"
 msgstr ""
 
-#: inc/mypageorder.php:123
+#: inc/mypageorder.php:146
 msgid "Updating Page Order..."
 msgstr ""
 
+#. #-#-#-#-#  sem-fixes.pot (Semiologic Fixes 2.4)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
 #: sem-fixes-info.php:2
 msgid "Semiologic Fixes"
 msgstr ""
 
+#. #-#-#-#-#  sem-fixes.pot (Semiologic Fixes 2.4)  #-#-#-#-#
+#. Description of the plugin/theme
 #: sem-fixes-info.php:3
 msgid "A variety of teaks and fixes for WordPress and third party plugins."
 msgstr ""
 
-#: sem-fixes.php:283
+#: sem-fixes.php:433
 msgid ""
 "Wordpress Hashcash needs javascript to work, but your browser has javascript "
 "disabled. Your comment will be deleted!"
 msgstr ""
 
-#: sem-fixes.php:286
+#: sem-fixes.php:436
 msgid ""
 "Wordpress Hashcash needs javascript to work, but your browser has javascript "
 "disabled. Your comment will be queued in Akismet!"
 msgstr ""
 
-#: sem-fixes.php:290
+#: sem-fixes.php:440
 msgid ""
 "Wordpress Hashcash needs javascript to work, but your browser has javascript "
 "disabled. Your comment will be placed in moderation!"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.semiologic.com/software/sem-fixes/"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Denis de Bernardy & Mike Koepke"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.getsemiologic.com"
 msgstr ""
