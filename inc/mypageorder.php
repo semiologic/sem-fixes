@@ -21,6 +21,8 @@ function mypageorder_js_libs() {
 
 //Switch page target depending on version
 function mypageorder_getTarget() {
+	return 'page-new.php';
+
 	global $wp_version;
 	switch (true) {
 		case version_compare($wp_version, '3.0.0', '>='):

@@ -84,8 +84,6 @@ class sem_fixes_admin {
 
 	function init() {
 		// more stuff: register actions and filters
-		global $wp_version;
-
 		$version = get_option('sem_fixes_version');
 		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) && !defined('DOING_CRON') )
 	        add_action('admin_init', array($this, 'upgrade'));
@@ -99,15 +97,15 @@ class sem_fixes_admin {
 
 
 		// this was address in 3.6 by http://core.trac.wordpress.org/changeset/23414
-		if ( version_compare( $wp_version, '3.6', '<' ) ) {
+		if ( function_exists('wp_revisions_to_keep') ) {
+			// use 3.6 filter wp_revisions_to_keep to limit post revisions
+			if ( !defined('WP_POST_REVISIONS') ||  !is_int(constant( 'WP_POST_REVISIONS' )) )
+		        add_filter('wp_revisions_to_keep', array($this, 'limit_post_revisions'), 0, 2);
+		}
+		else {
 		    # http://core.trac.wordpress.org/ticket/9843
 		    if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
 		        add_action('save_post', array($this, 'save_post_revision'), 1000000);
-		}
-		else {
-		  // use 3.6 filter wp_revisions_to_keep to limit post revisions
-			if ( !defined('WP_POST_REVISIONS') ||  !is_int(constant( 'WP_POST_REVISIONS' )) )
-		        add_filter('wp_revisions_to_keep', array($this, 'limit_post_revisions'), 0, 2);
 		}
 
 		# http://core.trac.wordpress.org/ticket/9876
@@ -117,6 +115,8 @@ class sem_fixes_admin {
 		add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
 		add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
 
+		# fix customizer not display sidebar widgets
+//		add_action('customize_controls_print_scripts', array($this, 'admin_customizer_styles'));
 
 		# http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
 		// add_action('admin_notices', array($this, 'fix_password_nag'), 0);
@@ -361,7 +361,26 @@ class sem_fixes_admin {
 EOS;
 	} # admin_print_styles()
 	
-	
+
+	/**
+	 * admin_customizer_styles()
+	 *
+	 * @return void
+	 **/
+
+	function admin_customizer_styles() {
+		echo <<<EOS
+<style type="text/css">
+.control-section[id^="accordion-section-sidebar-widgets-"] {
+	display: list-item !important;
+	height: auto !important;
+}
+</style>
+
+EOS;
+	} # admin_customizer_styles()
+
+
 	/**
 	 * fix_password_nag()
 	 *
