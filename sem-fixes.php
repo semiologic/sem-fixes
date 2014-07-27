@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.4.1
+Version: 2.5
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -19,7 +19,7 @@ This software is copyright Denis de Bernardy & Mike Koepke, and is distributed u
 **/
 
 
-define('sem_fixes_version', '2.4');
+define('sem_fixes_version', '2.5');
 
 /**
  * sem_fixes
@@ -178,7 +178,6 @@ class sem_fixes {
 
 		$this->load_plugins();
 		$this->fix_plugins();
-
 	}
 
 
@@ -220,7 +219,6 @@ class sem_fixes {
 	 * @param string $content
 	 * @return string $content
 	 **/
-
 	function fix_wysiwyg($content) {
 		$find_replace = array(
 			# broken paragraph tag
@@ -582,6 +580,9 @@ EOS;
 
 } # sem_fixes
 
+$sem_fixes = sem_fixes::get_instance();
+
+
 if ( !function_exists('wp_redirect') ) :
 /**
  * Redirects to another page.
@@ -612,4 +613,32 @@ function wp_redirect($location, $status = 302) {
 }
 endif;
 
-$sem_fixes = sem_fixes::get_instance();
+/**
+ * enable_widget_php()
+ *
+ * @param string $text
+ * @return string $text
+ **/
+function enable_widget_php ($text) {
+    if (strpos($text, '<' . '?') !== false) {
+        ob_start();
+        @eval('?' . '>' . $text);
+        $text = ob_get_contents();
+        ob_end_clean();
+    }
+    return $text;
+}
+
+# enable php code in widgets
+add_filter('widget_text', 'enable_widget_php', 1);
+
+
+#Filter to allow shortcodes in text widgets
+global $wp_embed;
+
+add_filter( 'widget_text', 'shortcode_unautop');
+add_filter( 'widget_text', 'do_shortcode', 11);
+
+// embed trick props http://daisyolsen.com/
+add_filter( 'widget_text', array( $wp_embed, 'run_shortcode' ), 8 );
+add_filter( 'widget_text', array( $wp_embed, 'autoembed'), 8 );

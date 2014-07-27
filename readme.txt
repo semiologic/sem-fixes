@@ -35,6 +35,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.5 =
+
+- Move widget PHP enable code and shortcode enable from sem-reloaded theme to this plugin
+
 = 2.4.1 =
 
 - Use more full proof WP version check to alter plugin behavior instead of relying on $wp_version constant.
