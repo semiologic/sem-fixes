@@ -85,7 +85,7 @@ class sem_fixes_admin {
 	function init() {
 		// more stuff: register actions and filters
 		$version = get_option('sem_fixes_version');
-		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) && !defined('DOING_CRON') )
+		if ( ( $version === false || version_compare( $version, sem_fixes_version, '<' ) ) )
 	        add_action('admin_init', array($this, 'upgrade'));
 
 		# http://core.trac.wordpress.org/ticket/4298
@@ -403,74 +403,108 @@ EOS;
 
 	function upgrade() {
 
-		$tadv_buts = get_option( 'tadv_btns4' );
-		if ( $tadv_buts === false || empty( $tadv_buts ) ) {
-			$tadv_btns1 = array(
-				'bold', 'italic', 'underline', 'strikethrough', '|',
-	            'sup', 'sub', 'blockquote', '|',
-				'outdent', 'indent', '|',
-				'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
-				'link', 'unlink', 'anchor', 'image',
-				);
 
-			$tadv_btns2 = array(
-				'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', 'backcolor', '|',
-				'emotions', 'charmap', 'nonbreaking', 'spellchecker',
-				);
+		$tadv_settings = get_option( 'tadv_settings' );
 
-			$tadv_btns3 = array(
-				'tablecontrols', 'delete_table', '|',
-				'wp_more', 'wp_page', '|', 'hr', '|',
-				'styleselect', '|', 'wp_help',
-				);
-
-			$tadv_btns4 = array(
-				'bullist', 'numlist', '|',
-                'pastetext', 'pasteword', 'removeformat', '|',
-				'search', 'replace', '|',
-				'undo', 'redo', '|', 'fullscreen',
-				);
-
-			update_option( 'tadv_btns1', $tadv_btns1 );
-
-			update_option( 'tadv_btns2', $tadv_btns2 );
-
-			update_option( 'tadv_btns3', $tadv_btns3 );
-
-			update_option( 'tadv_btns4', $tadv_btns4 );
-
-			update_option( 'tadv_toolbars', array(
-				'toolbar_1' => $tadv_btns1,
-				'toolbar_2' => $tadv_btns2,
-				'toolbar_3' => $tadv_btns3,
-				'toolbar_4' => $tadv_btns4 )
-			);
-
-			update_option( 'tadv_options', array(
-				'advlink1' => 1,
-				'advimage' => 1,
-				'editorstyle' => 0,
-				'hideclasses' => 0,
-				'contextmenu' => 1,
-				'no_autop' => 0,
-				'advlist' => 1,
+		if ( !empty( $tadv_settings ) ) {
+			$tadv_settings['toolbar_1'] = implode( ',', array(
+				'bold', 'italic', 'underline', 'strikethrough',
+	            'sup', 'sub', 'blockquote',
+				'outdent', 'indent',
+				'alignleft', 'aligncenter', 'alignright', 'alignjustify',
+				'link', 'unlink', 'anchor', 'image', 'wp_adv',
 				) );
 
-			update_option( 'tadv_plugins', array(
-				'nonbreaking',
-				'emotions',
-				'table',
+			$tadv_settings['toolbar_2'] = implode( ',', array(
+				'formatselect', 'fontselect', 'fontsizeselect', 'styleselect',
+				'forecolor', 'backcolor', 'removeformat',
+				) );
+
+			$tadv_settings['toolbar_3'] = implode( ',', array(
+				'bullist', 'numlist',
+                'pastetext', 'paste',
 				'searchreplace',
-				'advlink',
-				'advlist',
-				'advimage',
-				'contextmenu'
-				) );
+				'undo', 'redo', 'table',
+			) );
 
-			$tadv_allbtns = array( 'wp_adv', 'bold', 'italic', 'strikethrough', 'underline', 'bullist', 'numlist', 'outdent', 'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'cut', 'copy', 'paste', 'link', 'unlink', 'image', 'wp_more', 'wp_page', 'search', 'replace', 'fontselect', 'fontsizeselect', 'wp_help', 'fullscreen', 'styleselect', 'formatselect', 'forecolor', 'backcolor', 'pastetext', 'pasteword', 'removeformat', 'cleanup', 'spellchecker', 'charmap', 'print', 'undo', 'redo', 'tablecontrols', 'cite', 'ins', 'del', 'abbr', 'acronym', 'attribs', 'layer', 'advhr', 'code', 'visualchars', 'nonbreaking', 'sub', 'sup', 'visualaid', 'insertdate', 'inserttime', 'anchor', 'styleprops', 'emotions', 'media', 'blockquote', 'separator', '|' );
+			$tadv_settings['toolbar_4'] = implode( ',', array(
+				'wp_more', 'wp_page', 'hr', 'nonbreaking', 'emoticons', 'charmap',
+				'wp_help', 'fullscreen',
+			) );
 
-			update_option( 'tadv_allbtns', $tadv_allbtns );
+			$tadv_settings['options'] = implode( ',', array(
+				'menubar', 'advlink', 'advimage', 'contextmenu',
+				'advlist', ) );
 
+			update_option( 'tadv_settings', $tadv_settings );
+
+		}
+		else {		// pre TADV 4.0
+			$tadv_buts = get_option( 'tadv_btns4' );
+			if ( $tadv_buts === false || empty( $tadv_buts ) ) {
+				$tadv_btns1 = array(
+					'bold', 'italic', 'underline', 'strikethrough', '|',
+		            'sup', 'sub', 'blockquote', '|',
+					'outdent', 'indent', '|',
+					'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
+					'link', 'unlink', 'anchor', 'image', 'wp_adv',
+					);
+
+				$tadv_btns2 = array(
+					'formatselect', 'fontselect', 'fontsizeselect', 'forecolor', 'backcolor', '|',
+					'emotions', 'charmap', 'nonbreaking', 'spellchecker',
+					);
+
+				$tadv_btns3 = array(
+					'tablecontrols', 'delete_table', '|',
+					'wp_more', 'wp_page', '|', 'hr', '|',
+					'styleselect', '|', 'wp_help',
+					);
+
+				$tadv_btns4 = array(
+					'bullist', 'numlist', '|',
+	                'pastetext', 'pasteword', 'removeformat', '|',
+					'search', 'replace', '|',
+					'undo', 'redo', '|', 'fullscreen',
+					);
+
+				update_option( 'tadv_btns1', $tadv_btns1 );
+				update_option( 'tadv_btns2', $tadv_btns2 );
+				update_option( 'tadv_btns3', $tadv_btns3 );
+				update_option( 'tadv_btns4', $tadv_btns4 );
+
+				update_option( 'tadv_toolbars', array(
+					'toolbar_1' => $tadv_btns1,
+					'toolbar_2' => $tadv_btns2,
+					'toolbar_3' => $tadv_btns3,
+					'toolbar_4' => $tadv_btns4 )
+				);
+
+				update_option( 'tadv_options', array(
+					'advlink1' => 1,
+					'advimage' => 1,
+					'editorstyle' => 0,
+					'hideclasses' => 0,
+					'contextmenu' => 1,
+					'no_autop' => 0,
+					'advlist' => 1,
+					) );
+
+				update_option( 'tadv_plugins', array(
+					'nonbreaking',
+					'emotions',
+					'table',
+					'searchreplace',
+					'advlink',
+					'advlist',
+					'advimage',
+					'contextmenu'
+					) );
+
+				$tadv_allbtns = array( 'wp_adv', 'bold', 'italic', 'strikethrough', 'underline', 'bullist', 'numlist', 'outdent', 'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'cut', 'copy', 'paste', 'link', 'unlink', 'image', 'wp_more', 'wp_page', 'search', 'replace', 'fontselect', 'fontsizeselect', 'wp_help', 'fullscreen', 'styleselect', 'formatselect', 'forecolor', 'backcolor', 'pastetext', 'pasteword', 'removeformat', 'cleanup', 'spellchecker', 'charmap', 'print', 'undo', 'redo', 'tablecontrols', 'cite', 'ins', 'del', 'abbr', 'acronym', 'attribs', 'layer', 'advhr', 'code', 'visualchars', 'nonbreaking', 'sub', 'sup', 'visualaid', 'insertdate', 'inserttime', 'anchor', 'styleprops', 'emotions', 'media', 'blockquote', 'separator', '|' );
+
+				update_option( 'tadv_allbtns', $tadv_allbtns );
+			}
 		}
 
 		update_option( 'sem_fixes_version', sem_fixes_version );

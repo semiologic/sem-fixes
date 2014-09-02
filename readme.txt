@@ -2,7 +2,7 @@
 Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
-Requires at least: 3.5
+Requires at least: 3.8
 Tested up to: 3.9
 Stable tag: trunk
 
@@ -34,6 +34,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.6 =
+
+- TADV toolbar settings got completely removed.  Redo toolbars, enabled plugins to work with TDAV 4.0+ and TinyMCE 4.0.
 
 = 2.5 =
 
