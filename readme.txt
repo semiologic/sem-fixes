@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.8
-Tested up to: 3.9
+Tested up to: 4.0
 Stable tag: trunk
 
 Fixes a variety of WP and WP plugin bugs.
@@ -34,6 +34,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.7 =
+
+- WP 4.0 compat
 
 = 2.6 =
 
