@@ -35,6 +35,13 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.8 =
+
+- Performance improvements as some admin-only functionality was loaded for the front end.
+- Move hashcash tweaking code to Hashcash reloaded plugin
+- Dropped the inclusion of the libxml2 module
+- Code refactoring
+
 = 2.7 =
 
 - WP 4.0 compat

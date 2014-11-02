@@ -120,7 +120,13 @@ class sem_fixes_admin {
 
 		# http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
 		// add_action('admin_notices', array($this, 'fix_password_nag'), 0);
+
+		# http://core.trac.wordpress.org/ticket/9874
+		add_filter('tiny_mce_before_init', array($this, 'tiny_mce_config'));
+
+		$this->load_plugins();
 	}
+
 
     /**
 	 * fix_wpautop()
@@ -394,6 +400,65 @@ EOS;
 			update_user_meta($user_ID, 'default_password_nag', array());
 	} # fix_password_nag()
 
+
+	/**
+	 * load_plugins()
+	 *
+	 * @return void
+	 **/
+
+	function load_plugins() {
+		if ( !function_exists('wpguy_category_order_menu') )
+			include_once dirname(__FILE__) . '/inc/category-order.php';
+
+		if ( !function_exists('mypageorder_menu') )
+			include_once dirname(__FILE__) . '/inc/mypageorder.php';
+
+	} # plugins_loaded()
+
+	/**
+	 * tiny_mce_config()
+	 *
+	 * @param array $o
+	 * @return array $o
+	 **/
+
+	function tiny_mce_config($o) {
+		# http://forum.semiologic.com/discussion/4807/iframe-code-disappears-switching-visualhtml/
+		# http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/valid_elements#Full_XHTML_rule_set
+		# assume the stuff below is properly set if they exist already
+
+		if ( current_user_can('unfiltered_html') ) {
+			if ( !isset($o['extended_valid_elements']) ) {
+				$elts = array();
+
+				$elts[] = "iframe[align<bottom?left?middle?right?top|class|frameborder|height|id"
+					. "|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style"
+					. "|title|width]";
+
+				$elts = implode(',', $elts);
+
+				$o['extended_valid_elements'] = $elts;
+			}
+		} else {
+			if ( !isset($o['invalid_elements']) ) {
+				$elts = array();
+
+				$elts[] = "iframe";
+				$elts[] = "script";
+				$elts[] = "form";
+				$elts[] = "input";
+				$elts[] = "button";
+				$elts[] = "textarea";
+
+				$elts = implode(',', $elts);
+
+				$o['invalid_elements'] = $elts;
+			}
+		}
+
+		return $o;
+	} # tiny_mce_config()
 
 	/**
 	 * upgrade()
