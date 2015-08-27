@@ -1,4 +1,4 @@
 <?php
-__('Semiologic Fixes', 'sem-fixes');
-__('A variety of teaks and fixes for WordPress and third party plugins.', 'sem-fixes');
+__('Semiologic Tweaks and Fixes', 'sem-fixes');
+__('A variety of Semiologic implemented tweaks and fixes for WordPress.', 'sem-fixes');
 ?>
