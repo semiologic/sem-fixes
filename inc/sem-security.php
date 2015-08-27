@@ -17,7 +17,7 @@ if ( !defined('sem_security_debug') )
 	define('sem_security_debug', false);
 
 if ( !defined('module_textdomain') )
-	define('module_textdomain', 'parent');
+	define('module_textdomain', 'sem-fixes');
 
 /**
  * sem_security
