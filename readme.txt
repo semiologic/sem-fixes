@@ -1,9 +1,9 @@
-=== Semiologic Fixes ===
+=== Semiologic Tweaks and Fixes ===
 Contributors: Denis-de-Bernardy, Mike_Koepke
-Donate link: http://www.semiologic.com/partners/
+Donate link: https://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.8
-Tested up to: 4.0
+Tested up to: 4.3
 Stable tag: trunk
 
 Fixes a variety of WP and WP plugin bugs.
@@ -11,11 +11,11 @@ Fixes a variety of WP and WP plugin bugs.
 
 == Description ==
 
-The Semiologic Fixes plugin was born at a time where it was borderline impossible to get any kind of patch committed to the WP code base. Conveniently, the WP API allows to work around all sorts of workflow issues and outright bugs through the use of plugin hooks.
+The Semiologic Fixes plugin provides tweaks and fixes to WordPress and the WordPress experience.  Some of these are quirkiness of WP itself.
+Others are a difference in opinion of functionality that should or should not be present in WordPress (like emoji support).
+These tweaks and fixes are implemented to make the site faster or improve the overall usability.
 
-When WP is broken and I feel there is little or no chances this will get fixed in WP itself, I generally maintain a fix in the Semiologic Fixes plugin. The same for a handful of non-forked WP plugins that are in Semiologic Pro. (A fork is when you opt to decide to maintain the code yourself.)
-
-The exact bugs vary from a WP version to the next. Suffice it to say that you want this one to be active at all times.
+*Suffice it to say that you want this one to be active at all times.*
 
 = Post Revisions =
 
@@ -24,7 +24,7 @@ Yikes! The post and page revisions get out of control if left unchecked.   If yo
 
 = Help Me! =
 
-The [Semiologic forum](http://forum.semiologic.com) is the best place to report issues.
+The [Semiologic Support Page](https://www.semiologic.com/support/) is the best place to report issues.
 
 
 == Installation ==
@@ -34,6 +34,16 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 3.0 =
+
+- Temporaily Add basic security module
+- Get rid of emoji support added 4.2.  Not every site is a blog, WP Core Team!
+- Simply purge old tweaks from years ago.  Kepe only necesary tweaks
+- Allow WordPress Address and Site Address fields in Settings->General to be editable
+- WP 4.3 compat
+- Tested against PHP 5.6
+
 
 = 2.8 =
 

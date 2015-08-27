@@ -89,24 +89,18 @@ class sem_fixes_admin {
 	        add_action('admin_init', array($this, 'upgrade'));
 
 		# http://core.trac.wordpress.org/ticket/4298
-		add_filter('content_save_pre', array($this, 'fix_wpautop'), 0);
+/*		add_filter('content_save_pre', array($this, 'fix_wpautop'), 0);
 		add_filter('excerpt_save_pre', array($this, 'fix_wpautop'), 0);
 		add_filter('pre_term_description', array($this, 'fix_wpautop'), 0);
 		add_filter('pre_user_description', array($this, 'fix_wpautop'), 0);
 		add_filter('pre_link_description', array($this, 'fix_wpautop'), 0);
+*/
 
+		if ( !defined( 'WP_POST_REVISIONS' ) )
+			define( 'WP_POST_REVISIONS', 5 );
 
-		// this was address in 3.6 by http://core.trac.wordpress.org/changeset/23414
-		if ( function_exists('wp_revisions_to_keep') ) {
-			// use 3.6 filter wp_revisions_to_keep to limit post revisions
-			if ( !defined('WP_POST_REVISIONS') ||  !is_int(constant( 'WP_POST_REVISIONS' )) )
-		        add_filter('wp_revisions_to_keep', array($this, 'limit_post_revisions'), 0, 2);
-		}
-		else {
-		    # http://core.trac.wordpress.org/ticket/9843
-		    if ( !defined('WP_POST_REVISIONS') || WP_POST_REVISIONS )
-		        add_action('save_post', array($this, 'save_post_revision'), 1000000);
-		}
+		if ( !defined( 'AUTOSAVE_INTERVAL' )  )
+			define( 'AUTOSAVE_INTERVAL', 300 );
 
 		# http://core.trac.wordpress.org/ticket/9876
 		add_action('admin_menu', array($this, 'sort_admin_menu'), 1000000);
@@ -118,13 +112,14 @@ class sem_fixes_admin {
 		# fix customizer not display sidebar widgets
 //		add_action('customize_controls_print_scripts', array($this, 'admin_customizer_styles'));
 
-		# http://core.trac.wordpress.org/ticket/11380  // fixed in WP 3.0
-		// add_action('admin_notices', array($this, 'fix_password_nag'), 0);
-
 		# http://core.trac.wordpress.org/ticket/9874
 		add_filter('tiny_mce_before_init', array($this, 'tiny_mce_config'));
 
-		$this->load_plugins();
+		# no emoji stuff
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		remove_action( 'admin_print_styles', 'print_emoji_styles' );
+
+		$this->load_modules();
 	}
 
 
@@ -177,121 +172,6 @@ class sem_fixes_admin {
 	} # escape_php_callback()
 
 
-    /**
-   	 * limit_post_revisions()
-   	 *
-   	 * @param object $post
-     * @param int $num
-     *
-   	 * @return int
-   	 **/
-
-  	function limit_post_revisions($num, $post) {
-        return 5;
-    }
-
-
-	/**
-	 * save_post_revision()
-	 *
-	 * @param int $rev_id
-	 * @return void
-	 **/
-	
-	function save_post_revision($rev_id) {
-		if ( wp_is_post_autosave($rev_id) ) {
-			return;
-		} elseif ( $post_id = wp_is_post_revision($rev_id) ) {
-			# do nothing
-		} else {
-			$post_id = $rev_id;
-		}
-
-		global $wpdb;
-		$post = get_post($rev_id);
-
-		# drop dup revs
-		$kill_ids = $wpdb->get_col("
-			SELECT	ID
-			FROM	$wpdb->posts
-			WHERE	post_type = 'revision'
-			AND		ID <> " . intval($rev_id) . "
-			AND		post_parent = " . intval($post_id) . "
-			AND		post_content = '" . $wpdb->_real_escape($post->post_content) . "'
-			");
-
-		foreach ( $kill_ids as $kill_id )
-			wp_delete_post_revision($kill_id);
-
-		# stop here for real posts
-		if ( $post_id == $rev_id )
-			return;
-
-		# drop other potential dup revs
-		$kill_ids = $wpdb->get_col("
-			SELECT	p2.ID
-			FROM	$wpdb->posts as p2
-			JOIN	$wpdb->posts as p1
-			ON		p1.post_parent = p2.post_parent
-			AND		p1.post_type = p2.post_type
-			WHERE	p1.post_type = 'revision'
-			AND		p1.post_parent = " . intval($post_id) . "
-			AND		p1.post_content = p2.post_content
-			AND		p1.ID > p2.ID
-			");
-
-		foreach ( $kill_ids as $kill_id )
-			wp_delete_post_revision($kill_id);
-
-		# drop near-empty revs
-		$kill_ids = $wpdb->get_col("
-			SELECT	ID
-			FROM	$wpdb->posts
-			WHERE	post_type = 'revision'
-			AND		post_parent = " . intval($post_id) . "
-			AND		LENGTH(post_content) <= 50
-			");
-
-		foreach ( $kill_ids as $kill_id )
-			wp_delete_post_revision($kill_id);
-
-		# drop adjascent revs
-		$kill_ids = $wpdb->get_col("
-			SELECT	p2.ID
-			FROM	$wpdb->posts as p2
-			JOIN	$wpdb->posts as p1
-			ON		p1.post_parent = p2.post_parent
-			AND		p1.post_type = p2.post_type
-			WHERE	p1.post_type = 'revision'
-			AND		p1.post_parent = " . intval($post_id) . "
-			AND		DATEDIFF(p1.post_date, p2.post_date) < 1
-			AND		p1.post_date >= p2.post_date
-			AND		p1.ID <> p2.ID
-			");
-
-		foreach ( $kill_ids as $kill_id )
-			wp_delete_post_revision($kill_id);
-
-		# drop near-identical revs
-		$kill_ids = $wpdb->get_col("
-			SELECT	p2.ID
-			FROM	$wpdb->posts as p2
-			JOIN	$wpdb->posts as p1
-			ON		p1.post_parent = p2.post_parent
-			AND		p1.post_type = p2.post_type
-			WHERE	p1.post_type = 'revision'
-			AND		p1.post_parent = " . intval($post_id) . "
-			AND		DATEDIFF(p1.post_date, p2.post_date) <= 7
-			AND		ABS( LENGTH(p1.post_content) - LENGTH(p2.post_content) ) <= 50
-			AND		p1.post_date >= p2.post_date
-			AND		p1.ID <> p2.ID
-			");
-
-		foreach ( $kill_ids as $kill_id )
-			wp_delete_post_revision($kill_id);
-	} # save_post_revision()
-	
-	
 	/**
 	 * sort_admin_menu()
 	 *
@@ -388,33 +268,19 @@ EOS;
 
 
 	/**
-	 * fix_password_nag()
+	 * load_modules()
 	 *
 	 * @return void
 	 **/
 
-	function fix_password_nag() {
-		global $user_ID;
-		$pref = get_user_meta($user_ID, 'default_password_nag', true);
-		if ( !$pref && $pref !== array() )
-			update_user_meta($user_ID, 'default_password_nag', array());
-	} # fix_password_nag()
-
-
-	/**
-	 * load_plugins()
-	 *
-	 * @return void
-	 **/
-
-	function load_plugins() {
+	function load_modules() {
 		if ( !function_exists('wpguy_category_order_menu') )
 			include_once dirname(__FILE__) . '/inc/category-order.php';
 
 		if ( !function_exists('mypageorder_menu') )
 			include_once dirname(__FILE__) . '/inc/mypageorder.php';
 
-	} # plugins_loaded()
+	} # load_modules()
 
 	/**
 	 * tiny_mce_config()
@@ -468,6 +334,21 @@ EOS;
 
 	function upgrade() {
 
+		$version = get_option('sem_fixes_version');
+		if ( ( $version === false || version_compare( $version, '2.6', '<' ) ) )
+			$this->upgrade_tadv();
+
+		update_option( 'sem_fixes_version', sem_fixes_version );
+	}
+
+
+	/**
+	 * upgrade_tadv()
+	 *
+	 * @return void
+	 **/
+
+	function upgrade_tadv() {
 
 		$tadv_settings = get_option( 'tadv_settings' );
 
@@ -571,9 +452,8 @@ EOS;
 				update_option( 'tadv_allbtns', $tadv_allbtns );
 			}
 		}
-
-		update_option( 'sem_fixes_version', sem_fixes_version );
 	}
+
 
 } # sem_fixes_admin
 

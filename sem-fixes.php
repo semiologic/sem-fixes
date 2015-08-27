@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Semiologic Fixes
+Plugin Name: Semiologic Tweaks and Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
-Description: A variety of teaks and fixes for WordPress and third party plugins.
-Version: 2.8
+Description: A variety of Semiologic implemented tweaks and fixes for WordPress.
+Version: 3.0
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: sem-fixes
@@ -19,7 +19,7 @@ This software is copyright Denis de Bernardy & Mike Koepke, and is distributed u
 **/
 
 
-define('sem_fixes_version', '2.6');
+define('sem_fixes_version', '3.0');
 
 /**
  * sem_fixes
@@ -37,17 +37,13 @@ if ( @ini_get('pcre.backtrack_limit') <= 1000000 )
 if ( @ini_get('pcre.recursion_limit') <= 250000 )
 	@ini_set('pcre.recursion_limit', 250000);
 
-# fix calendar, see http://core.trac.wordpress.org/ticket/9588
-if ( function_exists('date_default_timezone_set') )
-	date_default_timezone_set('UTC');
-wp_timezone_override_offset();
-
 
 if (!defined('AUTOMATIC_UPDATER_DISABLED'))
 	define('AUTOMATIC_UPDATER_DISABLED',  true);
 
 
 class sem_fixes {
+
 	/**
 	 * Plugin instance.
 	 *
@@ -137,27 +133,11 @@ class sem_fixes {
 		if ( !is_admin() ) {
 		# remove #more-id in more links
 			add_filter('the_content_more_link', array($this, 'fix_more'), 10000);
-
-			# fix wysiwyg
-			add_option('fix_wysiwyg', '0');
-			if ( get_option('fix_wysiwyg') )
-			    add_filter('the_content', array($this, 'fix_wysiwyg'), 10000);
-
-			# kill generator
-			remove_action('wp_head', 'wp_generator');
-			add_filter('the_generator', array($this, 'the_generator'));
 		}
-
-		# http://core.trac.wordpress.org/ticket/9873
-		sem_fixes::readonly_url();
 
 		# http://core.trac.wordpress.org/ticket/6698
 		if ( wp_next_scheduled('do_generic_ping') > time() + 60 )
 		    sem_fixes::do_generic_ping();
-
-		# http://core.trac.wordpress.org/ticket/9105
-		if ( !get_option('show_on_front') )
-		    update_option('show_on_front', 'posts');
 
 		# http://core.trac.wordpress.org/changeset/14996
 		foreach ( array('the_content', 'the_title', 'wp_title' ) as $hook ) {
@@ -169,10 +149,14 @@ class sem_fixes {
 		# Fix curl SSL
 		add_filter('http_api_curl', array($this, 'curl_ssl'));
 
-		# https://core.trac.wordpress.org/ticket/26974
-		add_filter( 'date_rewrite_rules', array($this, 'stripDayRules'));
-	}
 
+		# no emoji stuff
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+
+		$this->load_modules();
+	}
 
 
     /**
@@ -188,7 +172,7 @@ class sem_fixes {
 		else
 			return str_replace("#more-" . get_the_ID(), '', $more_link);
 	} # fix_more()
-	
+
 	
 	/**
 	 * fix_wysiwyg()
@@ -238,47 +222,7 @@ class sem_fixes {
 		return preg_replace(array_keys($find_replace), array_values($find_replace), $content);
 	} # fix_wysiwyg()
 	
-	
-	/**
-	 * the_generator()
-	 *
-	 * @param string $in
-	 * @return string ''
-	 **/
 
-	function the_generator($in) {
-		return '';
-	} # the_generator()
-	
-	
-	/**
-	 * readonly_url()
-	 *
-	 * @return void
-	 **/
-
-	function readonly_url() {
-		$home_url = get_option('home');
-		$site_url = get_option('siteurl');
-		
-		$home_www = strpos($home_url, '://www.') !== false;
-		$site_www = strpos($site_url, '://www.') !== false;
-		
-		if ( $home_www != $site_www ) {
-			if ( $home_www )
-				$site_url = str_replace('://', '://www.', $site_url);
-			else
-				$site_url = str_replace('://www.', '://', $site_url);
-			update_option('siteurl', $site_url);
-		}
-		
-		if ( !defined('WP_HOME') )
-			define('WP_HOME', $home_url);
-		if ( !defined('WP_SITEURL') )
-			define('WP_SITEURL', $site_url);
-	} # readonly_url()
-	
-	
 	/**
 	 * do_generic_ping()
 	 *
@@ -308,35 +252,16 @@ class sem_fixes {
 		return $ch;
 	}
 
-
 	/**
-    * Disables day links when using /yyyy/mm/slug/ permalinks
-    *
-    * @see https://core.trac.wordpress.org/ticket/5305
-    * @see https://core.trac.wordpress.org/ticket/26974
-    *
-    * @param array $date_rewrite_rules
-    * @return array $date_rewrite_rules
-    */
-    public function stripDayRules($date_rewrite_rules)
-    {
-		if (get_option('permalink_structure') == '/%year%/%monthnum%/%postname%/') {
-		    $date_rewrite_rules = array_filter($date_rewrite_rules, array($this, 'stripDayRulesFilter'));
-		}
-		return $date_rewrite_rules;
-    }
+	 * load_modules()
+	 *
+	 * @return void
+	 **/
 
-	/**
-	* Filter used in stripDayRules()
-	*
-	* @param string $rule
-	* @return boolean $strip
-	*/
-	public function stripDayRulesFilter($rule)
-	{
-		return strpos($rule, '&day=') === false;
-	}
-
+	function load_modules() {
+		if ( !class_exists('sem_security') )
+			include_once dirname(__FILE__) . '/inc/sem-security.php';
+	} # load_modules()
 
 	/**
 	 * activate()
@@ -409,7 +334,9 @@ function wp_redirect($location, $status = 302) {
 	if ( ! $location )
 		return false;
 
-	$location = wp_sanitize_redirect($location);
+	if ( function_exists('wp_sanitize_redirect') ) {
+		$location = wp_sanitize_redirect($location);
+	}
 
 	if ( !$is_IIS && php_sapi_name() != 'cgi-fcgi' )
 		status_header($status); // This causes problems on IIS and some FastCGI setups
