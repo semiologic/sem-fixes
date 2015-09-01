@@ -5,7 +5,7 @@ Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of Semiologic implemented tweaks and fixes for WordPress.
 Version: 3.0
 Author: Denis de Bernardy & Mike Koepke
-Author URI: http://www.getsemiologic.com
+Author URI: https://www.semiologic.com
 Text Domain: sem-fixes
 Domain Path: /lang
 License: Dual licensed under the MIT and GPLv2 licenses
