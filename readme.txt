@@ -1,6 +1,6 @@
 === Semiologic Tweaks and Fixes ===
 Contributors: Denis-de-Bernardy, Mike_Koepke
-Donate link: https://www.semiologic.com/partners/
+Donate link: https://www.semiologic.com/donate/
 Tags: semiologic
 Requires at least: 3.8
 Tested up to: 4.3
@@ -39,7 +39,7 @@ The [Semiologic Support Page](https://www.semiologic.com/support/) is the best p
 
 - Temporaily Add basic security module
 - Get rid of emoji support added 4.2.  Not every site is a blog, WP Core Team!
-- Simply purge old tweaks from years ago.  Kepe only necesary tweaks
+- Simply purge old tweaks from years ago.  Keep only necessary tweaks
 - Allow WordPress Address and Site Address fields in Settings->General to be editable
 - WP 4.3 compat
 - Tested against PHP 5.6
