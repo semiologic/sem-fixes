@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Tweaks and Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of Semiologic implemented tweaks and fixes for WordPress.
-Version: 3.0
+Version: 3.0.1
 Author: Denis de Bernardy & Mike Koepke
 Author URI: https://www.semiologic.com
 Text Domain: sem-fixes
@@ -19,7 +19,7 @@ This software is copyright Denis de Bernardy & Mike Koepke, and is distributed u
 **/
 
 
-define('sem_fixes_version', '3.0');
+define('sem_fixes_version', '3.0.1');
 
 /**
  * sem_fixes
@@ -155,7 +155,7 @@ class sem_fixes {
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
 
-		$this->load_modules();
+//		$this->load_modules();
 	}
 
 

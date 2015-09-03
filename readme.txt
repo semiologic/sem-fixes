@@ -35,6 +35,10 @@ The [Semiologic Support Page](https://www.semiologic.com/support/) is the best p
 
 == Change Log ==
 
+= 3.0.1 =
+
+- Disable the temp security module
+
 = 3.0 =
 
 - Temporaily Add basic security module
