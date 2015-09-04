@@ -35,6 +35,10 @@ The [Semiologic Support Page](https://www.semiologic.com/support/) is the best p
 
 == Change Log ==
 
+= 3.0.3 =
+
+ - Oops left debugging code in a rule
+
 = 3.0.2 =
 
 - Added virtual robots.txt functionality with full Google crawl
