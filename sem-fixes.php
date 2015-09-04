@@ -3,7 +3,7 @@
 Plugin Name: Semiologic Tweaks and Fixes
 Plugin URI: http://www.semiologic.com/software/sem-fixes/
 Description: A variety of Semiologic implemented tweaks and fixes for WordPress.
-Version: 3.0.1
+Version: 3.0.2
 Author: Denis de Bernardy & Mike Koepke
 Author URI: https://www.semiologic.com
 Text Domain: sem-fixes
@@ -165,7 +165,7 @@ class sem_fixes {
 	 * @param string $more_link
 	 * @return string $more_link
 	 **/
-	
+
 	function fix_more($more_link) {
 		if ( is_singular() || !in_the_loop() )
 			return $more_link;
@@ -173,7 +173,7 @@ class sem_fixes {
 			return str_replace("#more-" . get_the_ID(), '', $more_link);
 	} # fix_more()
 
-	
+
 	/**
 	 * fix_wysiwyg()
 	 *
@@ -188,19 +188,19 @@ class sem_fixes {
 				\s*
 				<p>p(?:>|&gt;>)
 			~isx" => "<p>",
-			
+
 			# closed p, div or noscript singleton
 			"~
 				<\s*(?:p|div|noscript)	# p, div or noscript tag
 				(?:\s[^>]*)?			# optional attributes
 				/\s*>					# />
 			~ix" => "",
-			
+
 			# empty paragraph
 			"~
 				<p></p>					# empty paragraph
 			~ix" => "",
-			
+
 			# broken div align
 			"~
 				<p>&lt;</p>
@@ -212,16 +212,16 @@ class sem_fixes {
 				(.*?)
 				</p>
 			~isx" => "<p style=\"text-align: right;\">$1</p>",
-			
+
 			# more|nextpage in div tag
 			"~
 				<div\s+align=\"right\">(<!--(?:more|nextpage)-->)</div>
 			~isx" => "<p style=\"text-align: right;\">$1</p>",
 			);
-		
+
 		return preg_replace(array_keys($find_replace), array_values($find_replace), $content);
 	} # fix_wysiwyg()
-	
+
 
 	/**
 	 * do_generic_ping()
@@ -232,7 +232,7 @@ class sem_fixes {
 	function do_generic_ping() {
 		if ( get_transient('last_ping') )
 			return;
-		
+
 		wp_clear_scheduled_hook('do_generic_ping');
 		wp_schedule_single_event(time(), 'do_generic_ping');
 		set_transient('last_ping', time(), 1800);
@@ -272,14 +272,14 @@ class sem_fixes {
 	function activate() {
 		if ( !function_exists('save_mod_rewrite_rules') || !function_exists('get_home_path') )
 			include_once ABSPATH . 'wp-admin/includes/admin.php';
-		
+
 		if ( !isset($GLOBALS['wp_rewrite']) ) $GLOBALS['wp_rewrite'] = new WP_Rewrite;
-		
+
 		global $wp_rewrite;
 		$wp_rewrite->flush_rules();
 	} # activate()
-	
-	
+
+
 	/**
 	 * deactivate()
 	 *
@@ -289,11 +289,11 @@ class sem_fixes {
 	function deactivate() {
 		if ( !function_exists('save_mod_rewrite_rules') || !function_exists('get_home_path') )
 			include_once ABSPATH . 'wp-admin/includes/admin.php';
-		
+
 		if ( !isset($GLOBALS['wp_rewrite']) ) $GLOBALS['wp_rewrite'] = new WP_Rewrite;
-		
+
 		remove_filter('mod_rewrite_rules', array($this, 'rewrite_rules'));
-		
+
 		global $wp_rewrite;
 		$wp_rewrite->flush_rules();
 	} # deactivate()
@@ -378,4 +378,46 @@ if ( !is_admin() ) {
 	// embed trick props http://daisyolsen.com/
 	add_filter( 'widget_text', array( $wp_embed, 'run_shortcode' ), 8 );
 	add_filter( 'widget_text', array( $wp_embed, 'autoembed'), 8 );
+}
+
+	function pc_robots_txt() {
+		$rules = "User-agent: *\n"
+					. "Disallow: /wp-*\n"
+					. "Allow: /wp-includes/\n"
+					. "Allow: /wp-admin/load-scripts.php?*\n"
+					. "Allow: /wp-content/uploads/\n"
+					. "Allow: /wp-content/cache/assets/\n"
+					. "Allow: /wp-content/themes/*/*.css\n"
+					. "Allow: /wp-content/themes/*/*.js\n"
+					. "Allow: /wp-content/plugins/*/*.css\n"
+					. "Allow: /wp-content/plugins/*/*.js\n"
+					. "Allow: /wp-content/authors/\n"
+					. "Allow: /wp-content/semimikeologic/\n"
+					. "Allow: /*.png$\n"
+					. "Allow: /*.jpg$\n"
+					. "Allow: /*.gif$\n";
+
+		if ( strpos($_SERVER['REQUEST_URI'], '/robots.txt') !== false ) {
+
+			$pc_robots_txt = stripslashes( $rules );
+
+			header( 'Content-Type: text/plain; charset=utf-8' );
+			echo trim($pc_robots_txt) . "\n";
+
+			do_action( 'do_robotstxt' );
+		} # end if ( strpos($_SERVER['REQUEST_URI'], '/robots.txt') !== false ) {
+
+	} #pc_robots_txt()
+
+
+function pc_robots_txt_init() {
+
+	if ( get_option('blog_public') == '1' ) {
+		remove_action('do_robots', 'do_robots');
+		add_action('do_robots', 'pc_robots_txt', -1000);
+	}
+} #pc_robots_txt_init() {
+
+if ( !is_admin() ) {
+	add_action('init', 'pc_robots_txt_init');
 }

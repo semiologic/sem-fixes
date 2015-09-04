@@ -35,6 +35,10 @@ The [Semiologic Support Page](https://www.semiologic.com/support/) is the best p
 
 == Change Log ==
 
+= 3.0.2 =
+
+- Added virtual robots.txt functionality with full Google crawl
+
 = 3.0.1 =
 
 - Disable the temp security module
